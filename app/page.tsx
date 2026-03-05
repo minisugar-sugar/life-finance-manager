@@ -3,6 +3,7 @@ import { InsurancePanel } from "@/components/InsurancePanel";
 import { InsuranceForm } from "@/components/InsuranceForm";
 import Link from "next/link";
 import { UserBar } from "@/components/UserBar";
+import { MoneyFlowSection } from "@/components/MoneyFlowSection";
 
 export default function HomePage() {
   return (
@@ -22,6 +23,7 @@ export default function HomePage() {
         <MonthlyDashboard />
       </div>
 
+      <MoneyFlowSection />
       <InsuranceForm />
       <InsurancePanel />
     </main>
