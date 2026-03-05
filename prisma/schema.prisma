@@ -1,0 +1,203 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum IncomeCategory {
+  SALARY
+  SIDE
+  OTHER
+}
+
+enum ExpenseCategory {
+  FIXED
+  VARIABLE
+}
+
+enum ExpenseSubCategory {
+  HOUSING
+  FOOD
+  TRANSPORT
+  COMMUNICATION
+  UTILITIES
+  MEDICAL
+  EDUCATION
+  LEISURE
+  SUBSCRIPTION
+  INSURANCE
+  OTHER
+}
+
+enum InvestmentType {
+  STOCK
+  ETF
+  BOND
+  FUND
+  CRYPTO
+  PENSION
+  OTHER
+}
+
+enum SavingType {
+  DEPOSIT
+  INSTALLMENT_SAVING
+  CMA
+  CASH
+  OTHER
+}
+
+enum InsuranceType {
+  INDEMNITY
+  CANCER
+  HEALTH
+  TERM_LIFE
+  WHOLE_LIFE
+  ANNUITY
+  SAVING
+  AUTO
+  FIRE
+  LIABILITY
+  OTHER
+}
+
+enum InsurancePurpose {
+  PROTECTION
+  SAVING
+}
+
+enum PolicyStatus {
+  ACTIVE
+  MATURED
+  CANCELED
+  PAID_UP
+}
+
+model User {
+  id                String             @id @default(cuid())
+  email             String             @unique
+  name              String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  incomeRecords     IncomeRecord[]
+  expenseRecords    ExpenseRecord[]
+  investmentRecords InvestmentRecord[]
+  savingRecords     SavingRecord[]
+  insurancePolicies InsurancePolicy[]
+  retirementProfile RetirementProfile?
+}
+
+model IncomeRecord {
+  id        String         @id @default(cuid())
+  userId    String
+  month     DateTime       // store as first day of month (YYYY-MM-01)
+  category  IncomeCategory
+  amount    Decimal        @db.Decimal(16, 2)
+  memo      String?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, month])
+}
+
+model ExpenseRecord {
+  id          String             @id @default(cuid())
+  userId      String
+  month       DateTime           // store as first day of month (YYYY-MM-01)
+  category    ExpenseCategory
+  subCategory ExpenseSubCategory
+  amount      Decimal            @db.Decimal(16, 2)
+  memo        String?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, month])
+  @@index([userId, category, subCategory])
+}
+
+model InvestmentRecord {
+  id        String         @id @default(cuid())
+  userId    String
+  month     DateTime       // store as first day of month (YYYY-MM-01)
+  type      InvestmentType
+  amount    Decimal        @db.Decimal(16, 2)
+  ticker    String?
+  memo      String?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, month])
+  @@index([userId, type])
+}
+
+model SavingRecord {
+  id          String       @id @default(cuid())
+  userId      String
+  month       DateTime     // store as first day of month (YYYY-MM-01)
+  type        SavingType
+  amount      Decimal      @db.Decimal(16, 2)
+  rate        Decimal?     @db.Decimal(5, 2)
+  termMonths  Int?
+  maturityAt  DateTime?
+  memo        String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, month])
+  @@index([userId, type])
+}
+
+model InsurancePolicy {
+  id                 String           @id @default(cuid())
+  userId             String
+  insurer            String
+  productName        String
+  insuranceType      InsuranceType
+  purpose            InsurancePurpose
+  monthlyPremium     Decimal          @db.Decimal(16, 2)
+  coverageSummary    String?
+  startDate          DateTime
+  endDate            DateTime?
+  paymentTermMonths  Int?
+  renewalCycleMonths Int?
+  surrenderValue     Decimal?         @db.Decimal(16, 2)
+  status             PolicyStatus     @default(ACTIVE)
+  memo               String?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  user               User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@index([userId, insuranceType])
+  @@index([userId, endDate])
+}
+
+model RetirementProfile {
+  id                     String    @id @default(cuid())
+  userId                 String    @unique
+  currentAge             Int
+  targetRetireAge        Int
+  targetMonthlyLivingCost Decimal  @db.Decimal(16, 2)
+  expectedReturnRate     Decimal   @db.Decimal(5, 2) // annual, %
+  inflationRate          Decimal   @db.Decimal(5, 2) // annual, %
+  safeWithdrawalRate     Decimal   @db.Decimal(5, 2) // annual, %
+  currentNetWorth        Decimal?  @db.Decimal(16, 2)
+  notes                  String?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  user                   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
