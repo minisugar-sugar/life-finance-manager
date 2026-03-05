@@ -1,28 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { getUserId } from "@/lib/client-auth";
+import { db } from "@/lib/local-db";
 
 export function InsuranceForm() {
-  const [form, setForm] = useState({
-    insurer: "",
-    productName: "",
-    insuranceType: "INDEMNITY",
-    purpose: "PROTECTION",
-    monthlyPremium: "",
-    startDate: "",
-    endDate: ""
-  });
+  const [form, setForm] = useState({ insurer: "", productName: "", insuranceType: "INDEMNITY", purpose: "PROTECTION", monthlyPremium: "", endDate: "" });
 
-  const submit = async (e: React.FormEvent) => {
+  const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    const userId = getUserId();
-    await fetch(`/api/insurance?userId=${encodeURIComponent(userId)}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, monthlyPremium: Number(form.monthlyPremium) })
+    db.addInsurance({
+      insurer: form.insurer,
+      productName: form.productName,
+      insuranceType: form.insuranceType,
+      purpose: form.purpose,
+      monthlyPremium: Number(form.monthlyPremium),
+      status: "ACTIVE",
+      endDate: form.endDate || null
     });
-    alert("보험이 등록되었습니다. 새로고침하면 목록에 표시됩니다.");
+    alert("보험이 저장됐어요");
   };
 
   return (
@@ -31,14 +26,7 @@ export function InsuranceForm() {
       <div className="grid grid-2">
         <input placeholder="보험사" value={form.insurer} onChange={(e) => setForm({ ...form, insurer: e.target.value })} required />
         <input placeholder="상품명" value={form.productName} onChange={(e) => setForm({ ...form, productName: e.target.value })} required />
-        <select value={form.insuranceType} onChange={(e) => setForm({ ...form, insuranceType: e.target.value })}>
-          <option value="INDEMNITY">실손</option><option value="CANCER">암</option><option value="HEALTH">건강</option><option value="TERM_LIFE">정기</option><option value="WHOLE_LIFE">종신</option><option value="ANNUITY">연금</option>
-        </select>
-        <select value={form.purpose} onChange={(e) => setForm({ ...form, purpose: e.target.value })}>
-          <option value="PROTECTION">보장성</option><option value="SAVING">저축성</option>
-        </select>
         <input placeholder="월 보험료" type="number" value={form.monthlyPremium} onChange={(e) => setForm({ ...form, monthlyPremium: e.target.value })} required />
-        <input type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} required />
         <input type="date" value={form.endDate} onChange={(e) => setForm({ ...form, endDate: e.target.value })} />
       </div>
       <button style={{ marginTop: 12 }}>등록</button>

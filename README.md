@@ -3,10 +3,10 @@
 개인 재정관리 서비스 MVP입니다.
 
 ## 포함 기능
-- 월간 대시보드 API (`/api/dashboard/summary`)
-- 보험 CRUD API (`/api/insurance`, `/api/insurance/[id]`) + 화면에서 수정/삭제
-- 월간 돈 기록 API (`/api/records`) + 대시보드 입력/목록/차트
-- 은퇴 추천 API (`/api/retirement/recommendation`)
+- 월간 대시보드 화면 (GitHub Pages에서는 localStorage 기반)
+- 보험 관리(추가/수정/삭제)
+- 월간 돈 기록(입력/목록/차트)
+- 은퇴 추천 리포트 + 목표 빠른 설정
 - 계산기 페이지 (`/calculators`) - 단리/복리/예금/적금/대출(원리금균등/원금균등/만기일시)/배당/은퇴 목표 + 전체회차 CSV 다운로드
 - 은퇴 리포트 페이지 (`/retirement`) - 월 부족분 및 행동 추천 + 목표 빠른설정 폼
 - 간편 로그인 페이지 (`/login`) - 이메일 기반 사용자 데이터 분리(MVP)
@@ -16,10 +16,12 @@
 ## 실행
 ```bash
 npm install
-npx prisma generate
-npx prisma migrate dev --name init
 npm run dev
 ```
+
+## GitHub Pages 배포
+- main에 푸시하면 GitHub Actions가 자동으로 정적 사이트를 빌드해 Pages에 배포합니다.
+- GitHub Pages에서는 서버 API 대신 브라우저 저장소(localStorage)로 동작합니다.
 
 ## DB
 `.env`에 아래를 설정하세요.

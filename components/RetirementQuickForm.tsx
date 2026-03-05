@@ -1,21 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { getUserId } from "@/lib/client-auth";
+import { db } from "@/lib/local-db";
 
 export function RetirementQuickForm({ onSaved }: { onSaved?: () => void }) {
-  const [currentAge, setCurrentAge] = useState(35);
-  const [targetRetireAge, setTargetRetireAge] = useState(55);
-  const [targetMonthlyLivingCost, setTargetMonthlyLivingCost] = useState(4000000);
+  const cur = db.getRetire();
+  const [currentAge, setCurrentAge] = useState(cur.currentAge);
+  const [targetRetireAge, setTargetRetireAge] = useState(cur.targetRetireAge);
+  const [targetMonthlyLivingCost, setTargetMonthlyLivingCost] = useState(cur.targetMonthlyLivingCost);
 
-  const save = async (e: React.FormEvent) => {
+  const save = (e: React.FormEvent) => {
     e.preventDefault();
-    const userId = getUserId();
-    await fetch(`/api/retirement/profile?userId=${encodeURIComponent(userId)}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ currentAge, targetRetireAge, targetMonthlyLivingCost })
-    });
+    db.setRetire({ currentAge, targetRetireAge, targetMonthlyLivingCost });
     onSaved?.();
   };
 
