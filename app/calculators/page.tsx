@@ -11,6 +11,7 @@ import {
   type LoanMethod
 } from "@/lib/calculators";
 import { toCsv } from "@/lib/csv";
+import { FormattedNumberInput } from "@/components/FormattedNumberInput";
 
 export default function CalculatorsPage() {
   const [principal, setPrincipal] = useState(10000000);
@@ -71,7 +72,7 @@ export default function CalculatorsPage() {
       <div className="card" style={{ marginBottom: 16 }}>
         <h3 style={{ marginTop: 0 }}>단리/복리/예적금</h3>
         <div className="grid grid-2">
-          <label>원금 <input type="number" value={principal} onChange={(e) => setPrincipal(Number(e.target.value))} /></label>
+          <label>원금 <FormattedNumberInput value={principal} onChange={setPrincipal} /></label>
           <label>연이율(%) <input type="number" value={rate} onChange={(e) => setRate(Number(e.target.value))} /></label>
           <label>기간(개월) <input type="number" value={months} onChange={(e) => setMonths(Number(e.target.value))} /></label>
         </div>
@@ -88,7 +89,7 @@ export default function CalculatorsPage() {
       <div className="card" style={{ marginBottom: 16 }}>
         <h3 style={{ marginTop: 0 }}>대출 계산기 (3방식)</h3>
         <div className="grid grid-2">
-          <label>대출원금 <input type="number" value={loanPrincipal} onChange={(e) => setLoanPrincipal(Number(e.target.value))} /></label>
+          <label>대출원금 <FormattedNumberInput value={loanPrincipal} onChange={setLoanPrincipal} /></label>
           <label>연이율(%) <input type="number" value={rate} onChange={(e) => setRate(Number(e.target.value))} /></label>
           <label>기간(개월) <input type="number" value={loanMonths} onChange={(e) => setLoanMonths(Number(e.target.value))} /></label>
           <label>
@@ -141,7 +142,7 @@ export default function CalculatorsPage() {
         <div className="grid grid-2">
           <label>
             투자금액
-            <input type="number" value={dividendPrincipal} onChange={(e) => setDividendPrincipal(Number(e.target.value))} />
+            <FormattedNumberInput value={dividendPrincipal} onChange={setDividendPrincipal} />
           </label>
           <label>
             배당률(연 %)

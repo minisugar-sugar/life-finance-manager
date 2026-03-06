@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { db, type InsuranceRow } from "@/lib/local-db";
+import { FormattedNumberInput } from "@/components/FormattedNumberInput";
 
 export function InsurancePanel() {
   const [items, setItems] = useState<InsuranceRow[]>([]);
@@ -39,7 +40,7 @@ export function InsurancePanel() {
           <div className="grid grid-2">
             <input value={editing.insurer} onChange={(e) => setEditing({ ...editing, insurer: e.target.value })} />
             <input value={editing.productName} onChange={(e) => setEditing({ ...editing, productName: e.target.value })} />
-            <input value={editing.monthlyPremium} onChange={(e) => setEditing({ ...editing, monthlyPremium: Number(e.target.value) })} />
+            <FormattedNumberInput value={Number(editing.monthlyPremium)} onChange={(v) => setEditing({ ...editing, monthlyPremium: v })} />
           </div>
           <div style={{ marginTop: 10, display: "flex", gap: 8 }}>
             <button onClick={() => { if (editing) db.updateInsurance(editing.id, editing); setEditing(null); load(); }}>저장</button>

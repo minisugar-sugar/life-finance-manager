@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { db } from "@/lib/local-db";
+import { FormattedNumberInput } from "@/components/FormattedNumberInput";
 
 export function MoneyFlowForm({ month, onDone }: { month: string; onDone?: () => void }) {
   const [type, setType] = useState("income");
@@ -28,7 +29,7 @@ export function MoneyFlowForm({ month, onDone }: { month: string; onDone?: () =>
           <option value="income">수입</option><option value="expense">지출</option><option value="invest">투자</option><option value="save">저축</option>
         </select>
         <select value={category} onChange={(e) => setCategory(e.target.value)}>{categoryOptions.map((c) => <option key={c}>{c}</option>)}</select>
-        <input type="number" placeholder="금액" value={amount} onChange={(e) => setAmount(Number(e.target.value))} required />
+        <FormattedNumberInput value={amount} onChange={setAmount} placeholder="금액" />
         <input placeholder="메모(예: 월급, 월세)" value={memo} onChange={(e) => setMemo(e.target.value)} />
       </div>
       <button style={{ marginTop: 10 }}>추가</button>

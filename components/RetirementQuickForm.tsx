@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { db } from "@/lib/local-db";
+import { FormattedNumberInput } from "@/components/FormattedNumberInput";
 
 export function RetirementQuickForm({ onSaved }: { onSaved?: () => void }) {
   const cur = db.getRetire();
@@ -21,7 +22,7 @@ export function RetirementQuickForm({ onSaved }: { onSaved?: () => void }) {
       <div className="grid grid-2">
         <label>현재 나이 <input type="number" value={currentAge} onChange={(e) => setCurrentAge(Number(e.target.value))} /></label>
         <label>은퇴 나이 <input type="number" value={targetRetireAge} onChange={(e) => setTargetRetireAge(Number(e.target.value))} /></label>
-        <label>목표 월생활비 <input type="number" value={targetMonthlyLivingCost} onChange={(e) => setTargetMonthlyLivingCost(Number(e.target.value))} /></label>
+        <label>목표 월생활비 <FormattedNumberInput value={targetMonthlyLivingCost} onChange={setTargetMonthlyLivingCost} /></label>
       </div>
       <button style={{ marginTop: 10 }}>저장</button>
     </form>

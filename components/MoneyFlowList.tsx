@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { db, type MoneyRow } from "@/lib/local-db";
+import { FormattedNumberInput } from "@/components/FormattedNumberInput";
 
 export function MoneyFlowList({ month, refreshKey = 0 }: { month: string; refreshKey?: number }) {
   const [rows, setRows] = useState<MoneyRow[]>([]);
@@ -33,7 +34,7 @@ export function MoneyFlowList({ month, refreshKey = 0 }: { month: string; refres
           <h3 style={{ marginTop: 0 }}>기록 수정</h3>
           <div className="grid grid-2">
             <input value={editing.label} onChange={(e) => setEditing({ ...editing, label: e.target.value })} />
-            <input type="number" value={editing.amount} onChange={(e) => setEditing({ ...editing, amount: Number(e.target.value) })} />
+            <FormattedNumberInput value={editing.amount} onChange={(v) => setEditing({ ...editing, amount: v })} />
           </div>
           <div style={{ marginTop: 10, display: "flex", gap: 8 }}>
             <button onClick={() => { if (editing) db.updateMoney(editing.id, { label: editing.label, amount: editing.amount }); setEditing(null); load(); }}>저장</button>
