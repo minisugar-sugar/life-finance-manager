@@ -1,5 +1,6 @@
 import { MoneyFlowSection } from "@/components/MoneyFlowSection";
 import { FlowCharts } from "@/components/FlowCharts";
+import { MonthlyDashboard } from "@/components/MonthlyDashboard";
 import Link from "next/link";
 
 export default function MoneyPage() {
@@ -12,6 +13,12 @@ export default function MoneyPage() {
       <div style={{ marginBottom: 12 }}>
         <Link href="/">← 홈으로</Link>
       </div>
+
+      <div className="section-title">이달의 요약</div>
+      <div className="grid grid-2" style={{ marginBottom: 16 }}>
+        <MonthlyDashboard />
+      </div>
+
       <MoneyFlowSection />
       <FlowCharts />
     </main>

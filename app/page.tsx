@@ -1,4 +1,3 @@
-import { MonthlyDashboard } from "@/components/MonthlyDashboard";
 import Link from "next/link";
 import { UserBar } from "@/components/UserBar";
 
@@ -39,11 +38,6 @@ export default function HomePage() {
             <span className="index-badge">보험</span>
           </Link>
         </div>
-      </div>
-
-      <div className="section-title">이번 달 요약</div>
-      <div className="grid grid-2" style={{ marginBottom: 16 }}>
-        <MonthlyDashboard />
       </div>
     </main>
   );
