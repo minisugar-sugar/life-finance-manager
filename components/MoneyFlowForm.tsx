@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { db } from "@/lib/local-db";
+import { toKo } from "@/lib/labels";
 import { FormattedNumberInput } from "@/components/FormattedNumberInput";
 
 export function MoneyFlowForm({ month, onDone }: { month: string; onDone?: () => void }) {
@@ -28,7 +29,7 @@ export function MoneyFlowForm({ month, onDone }: { month: string; onDone?: () =>
         <select value={type} onChange={(e) => { setType(e.target.value); setCategory("OTHER"); }}>
           <option value="income">수입</option><option value="expense">지출</option><option value="invest">투자</option><option value="save">저축</option>
         </select>
-        <select value={category} onChange={(e) => setCategory(e.target.value)}>{categoryOptions.map((c) => <option key={c}>{c}</option>)}</select>
+        <select value={category} onChange={(e) => setCategory(e.target.value)}>{categoryOptions.map((c) => <option key={c} value={c}>{toKo(c)}</option>)}</select>
         <FormattedNumberInput value={amount} onChange={setAmount} placeholder="금액" />
         <input placeholder="메모(예: 월급, 월세)" value={memo} onChange={(e) => setMemo(e.target.value)} />
       </div>

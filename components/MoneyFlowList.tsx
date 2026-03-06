@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { db, type MoneyRow } from "@/lib/local-db";
+import { toKo } from "@/lib/labels";
 import { FormattedNumberInput } from "@/components/FormattedNumberInput";
 
 export function MoneyFlowList({ month, refreshKey = 0 }: { month: string; refreshKey?: number }) {
@@ -19,7 +20,7 @@ export function MoneyFlowList({ month, refreshKey = 0 }: { month: string; refres
         <tbody>
           {rows.map((r) => (
             <tr key={r.id}>
-              <td>{r.type}</td><td>{r.label}</td><td>{r.amount.toLocaleString("ko-KR")}원</td>
+              <td>{toKo(r.type)}</td><td>{toKo(r.label)}</td><td>{r.amount.toLocaleString("ko-KR")}원</td>
               <td style={{ display: "flex", gap: 6 }}>
                 <button onClick={() => setEditing(r)}>수정</button>
                 <button onClick={() => { db.deleteMoney(r.id); load(); }}>삭제</button>

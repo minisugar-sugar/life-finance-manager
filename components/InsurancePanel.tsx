@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { db, type InsuranceRow } from "@/lib/local-db";
+import { toKo } from "@/lib/labels";
 import { FormattedNumberInput } from "@/components/FormattedNumberInput";
 
 export function InsurancePanel() {
@@ -24,7 +25,7 @@ export function InsurancePanel() {
         <tbody>
           {items.map((item) => (
             <tr key={item.id}>
-              <td>{item.insurer}</td><td>{item.productName}</td><td>{Number(item.monthlyPremium).toLocaleString("ko-KR")}원</td><td>{item.status}</td>
+              <td>{item.insurer}</td><td>{item.productName}</td><td>{Number(item.monthlyPremium).toLocaleString("ko-KR")}원</td><td>{toKo(item.status)}</td>
               <td style={{ display: "flex", gap: 6 }}>
                 <button onClick={() => setEditing(item)}>수정</button>
                 <button onClick={() => { db.deleteInsurance(item.id); load(); }}>삭제</button>
