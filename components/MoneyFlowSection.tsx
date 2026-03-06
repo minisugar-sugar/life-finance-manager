@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { MoneyFlowForm } from "@/components/MoneyFlowForm";
 import { MoneyFlowList } from "@/components/MoneyFlowList";
+import { MoneyBigItemsForm } from "@/components/MoneyBigItemsForm";
 import { monthKey } from "@/lib/local-db";
 
 export function MoneyFlowSection() {
@@ -15,6 +16,7 @@ export function MoneyFlowSection() {
         <b>조회 월</b>
         <input type="month" value={month} onChange={(e) => setMonth(e.target.value)} />
       </div>
+      <MoneyBigItemsForm month={month} onDone={() => setRefreshKey((v) => v + 1)} />
       <MoneyFlowForm month={month} onDone={() => setRefreshKey((v) => v + 1)} />
       <MoneyFlowList month={month} refreshKey={refreshKey} />
     </div>
