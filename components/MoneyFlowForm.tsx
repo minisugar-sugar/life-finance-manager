@@ -14,12 +14,15 @@ export function MoneyFlowForm({ month, onDone }: { month: string; onDone?: () =>
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
+    const fixedExpenseLabels = ["HOUSING", "INSURANCE", "LOAN_REPAYMENT", "COMMUNICATION_FEE", "MAINTENANCE_FEE", "ACADEMY_FEE"];
+    const finalExpenseKind: ExpenseKind = fixedExpenseLabels.includes(category) ? "fixed" : expenseKind;
+
     db.addMoney({
       type: type as any,
       amount,
       label: memo || category,
       month,
-      ...(type === "expense" ? { expenseKind } : {})
+      ...(type === "expense" ? { expenseKind: finalExpenseKind } : {})
     });
     setAmount(0);
     setMemo("");

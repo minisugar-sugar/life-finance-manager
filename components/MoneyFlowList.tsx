@@ -74,8 +74,9 @@ export function MoneyFlowList({ month, refreshKey = 0 }: { month: string; refres
           );
         }
 
-        const fixed = list.filter((x) => x.expenseKind === "fixed");
-        const variable = list.filter((x) => x.expenseKind === "variable" || !x.expenseKind);
+        const fixedExpenseLabels = new Set(["HOUSING", "INSURANCE", "LOAN_REPAYMENT", "COMMUNICATION_FEE", "MAINTENANCE_FEE", "ACADEMY_FEE"]);
+        const fixed = list.filter((x) => x.expenseKind === "fixed" || fixedExpenseLabels.has(x.label));
+        const variable = list.filter((x) => !(x.expenseKind === "fixed" || fixedExpenseLabels.has(x.label)));
         const fixedSum = fixed.reduce((a, b) => a + b.amount, 0);
         const variableSum = variable.reduce((a, b) => a + b.amount, 0);
 
