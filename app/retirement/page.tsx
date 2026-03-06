@@ -41,6 +41,7 @@ export default function RetirementPage() {
     <main className="container">
       <h1 className="h1">은퇴 추천 리포트</h1>
       <p className="muted">입력한 값으로 간단하게 계산해 보여줘요 (GitHub Pages용).</p>
+      <button onClick={() => window.print()} style={{ marginBottom: 10 }}>PDF 저장</button>
       <RetirementQuickForm onSaved={load} />
       {!data ? <div className="card">로딩 중...</div> : (
         <>

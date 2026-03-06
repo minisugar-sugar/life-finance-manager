@@ -2,13 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
-import { db, type MoneyRow } from "@/lib/local-db";
+import { db, monthKey, type MoneyRow } from "@/lib/local-db";
 
 const COLORS = ["#4f46e5", "#06b6d4", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6"];
 
 export function FlowCharts() {
   const [rows, setRows] = useState<MoneyRow[]>([]);
-  useEffect(() => setRows(db.listMoney()), []);
+  useEffect(() => setRows(db.listMoney(monthKey())), []);
 
   const byType = useMemo(() => {
     const map = new Map<string, number>();

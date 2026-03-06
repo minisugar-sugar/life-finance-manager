@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { db } from "@/lib/local-db";
 
-export function MoneyFlowForm({ onDone }: { onDone?: () => void }) {
+export function MoneyFlowForm({ month, onDone }: { month: string; onDone?: () => void }) {
   const [type, setType] = useState("income");
   const [amount, setAmount] = useState(0);
   const [memo, setMemo] = useState("");
@@ -11,7 +11,7 @@ export function MoneyFlowForm({ onDone }: { onDone?: () => void }) {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    db.addMoney({ type: type as any, amount, label: memo || category });
+    db.addMoney({ type: type as any, amount, label: memo || category, month });
     setAmount(0);
     setMemo("");
     onDone?.();
@@ -21,7 +21,7 @@ export function MoneyFlowForm({ onDone }: { onDone?: () => void }) {
 
   return (
     <form className="card" onSubmit={submit}>
-      <h3 style={{ marginTop: 0 }}>이번 달 돈 기록 추가</h3>
+      <h3 style={{ marginTop: 0 }}>돈 기록 추가 ({month})</h3>
       <div className="grid grid-2">
         <select value={type} onChange={(e) => { setType(e.target.value); setCategory("OTHER"); }}>
           <option value="income">수입</option><option value="expense">지출</option><option value="invest">투자</option><option value="save">저축</option>

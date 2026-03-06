@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { MonthlySummary } from "@/lib/types";
-import { db } from "@/lib/local-db";
+import { db, monthKey } from "@/lib/local-db";
 
 const initial: MonthlySummary = { income: 0, expense: 0, invest: 0, save: 0, insurance: 0, net: 0 };
 
@@ -10,7 +10,7 @@ export function MonthlyDashboard() {
   const [summary, setSummary] = useState<MonthlySummary>(initial);
 
   useEffect(() => {
-    const rows = db.listMoney();
+    const rows = db.listMoney(monthKey());
     const insurance = db.listInsurance().filter((x) => x.status === "ACTIVE").reduce((a, b) => a + Number(b.monthlyPremium), 0);
     const income = rows.filter((r) => r.type === "income").reduce((a, b) => a + b.amount, 0);
     const expense = rows.filter((r) => r.type === "expense").reduce((a, b) => a + b.amount, 0);

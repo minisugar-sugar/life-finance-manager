@@ -3,7 +3,7 @@
 import { getUserId } from "@/lib/client-auth";
 
 export type MoneyType = "income" | "expense" | "invest" | "save";
-export type MoneyRow = { id: string; type: MoneyType; label: string; amount: number; createdAt: number };
+export type MoneyRow = { id: string; type: MoneyType; label: string; amount: number; month: string; createdAt: number };
 export type InsuranceRow = {
   id: string;
   insurer: string;
@@ -20,6 +20,12 @@ function key(name: string) {
   return `lfm:${getUserId()}:${name}`;
 }
 
+export function monthKey(date = new Date()) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  return `${y}-${m}`;
+}
+
 function read<T>(name: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
   const raw = localStorage.getItem(key(name));
@@ -33,10 +39,18 @@ function write<T>(name: string, value: T) {
 }
 
 export const db = {
-  listMoney: () => read<MoneyRow[]>("money", []),
+  listMoney: (month?: string) => {
+    const rows = read<MoneyRow[]>("money", []);
+    if (!month) return rows;
+    return rows.filter((r) => (r.month ?? monthKey()) === month);
+  },
   addMoney: (row: Omit<MoneyRow, "id" | "createdAt">) => {
     const rows = db.listMoney();
     rows.unshift({ ...row, id: crypto.randomUUID(), createdAt: Date.now() });
+    write("money", rows);
+  },
+  updateMoney: (id: string, patch: Partial<MoneyRow>) => {
+    const rows = db.listMoney().map((r) => (r.id === id ? { ...r, ...patch } : r));
     write("money", rows);
   },
   deleteMoney: (id: string) => write("money", db.listMoney().filter((r) => r.id !== id)),
