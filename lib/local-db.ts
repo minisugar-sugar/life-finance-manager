@@ -16,6 +16,33 @@ export type InsuranceRow = {
 };
 export type RetirementProfile = { currentAge: number; targetRetireAge: number; targetMonthlyLivingCost: number };
 
+export type AssetProfile = {
+  // 현재 자산
+  cash: number;
+  depositBalance: number;
+  savingBalance: number;
+  stockEtf: number;
+  bond: number;
+  pension: number;
+  crypto: number;
+  realEstateSelf: number;
+  realEstateRent: number;
+  otherAsset: number;
+
+  // 월 수입
+  salaryIncome: number;
+  sideIncome: number;
+  dividendIncome: number;
+  rentIncome: number;
+  otherIncome: number;
+
+  // 월 지출
+  livingExpense: number;
+  loanPayment: number;
+  insurancePayment: number;
+  otherExpense: number;
+};
+
 function key(name: string) {
   return `lfm:${getUserId()}:${name}`;
 }
@@ -43,6 +70,28 @@ function makeId() {
   if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") return crypto.randomUUID();
   return `id-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
+
+const defaultAssetProfile: AssetProfile = {
+  cash: 0,
+  depositBalance: 0,
+  savingBalance: 0,
+  stockEtf: 0,
+  bond: 0,
+  pension: 0,
+  crypto: 0,
+  realEstateSelf: 0,
+  realEstateRent: 0,
+  otherAsset: 0,
+  salaryIncome: 0,
+  sideIncome: 0,
+  dividendIncome: 0,
+  rentIncome: 0,
+  otherIncome: 0,
+  livingExpense: 0,
+  loanPayment: 0,
+  insurancePayment: 0,
+  otherExpense: 0
+};
 
 export const db = {
   listMoney: (month?: string) => {
@@ -74,5 +123,8 @@ export const db = {
   deleteInsurance: (id: string) => write("insurance", db.listInsurance().filter((r) => r.id !== id)),
 
   getRetire: () => read<RetirementProfile>("retire", { currentAge: 35, targetRetireAge: 55, targetMonthlyLivingCost: 4000000 }),
-  setRetire: (p: RetirementProfile) => write("retire", p)
+  setRetire: (p: RetirementProfile) => write("retire", p),
+
+  getAssets: () => read<AssetProfile>("assets", defaultAssetProfile),
+  setAssets: (p: AssetProfile) => write("assets", p)
 };
