@@ -17,6 +17,12 @@ export const LABELS: Record<string, string> = {
   LEISURE: "여가",
   INSURANCE: "보험료",
   LOAN_REPAYMENT: "대출 원금/이자 상환",
+  COMMUNICATION_FEE: "통신비",
+  MAINTENANCE_FEE: "관리비",
+  ACADEMY_FEE: "학원비",
+
+  fixed: "고정지출",
+  variable: "변동지출",
   COMMUNICATION: "통신",
   UTILITIES: "공과금",
   MEDICAL: "의료",

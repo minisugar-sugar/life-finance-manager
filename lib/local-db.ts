@@ -3,7 +3,8 @@
 import { getUserId } from "@/lib/client-auth";
 
 export type MoneyType = "income" | "expense" | "invest" | "save";
-export type MoneyRow = { id: string; type: MoneyType; label: string; amount: number; month: string; createdAt: number };
+export type ExpenseKind = "fixed" | "variable";
+export type MoneyRow = { id: string; type: MoneyType; label: string; amount: number; month: string; createdAt: number; expenseKind?: ExpenseKind };
 export type InsuranceRow = {
   id: string;
   insurer: string;

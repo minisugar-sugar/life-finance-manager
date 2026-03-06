@@ -23,6 +23,37 @@ export function MoneyFlowList({ month, refreshKey = 0 }: { month: string; refres
     return map;
   }, [rows]);
 
+  const renderTable = (list: MoneyRow[]) => (
+    <table className="table">
+      <thead>
+        <tr>
+          <th>항목</th>
+          <th>금액</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {list.map((r) => (
+          <tr key={r.id}>
+            <td>{toKo(r.label)}</td>
+            <td>{r.amount.toLocaleString("ko-KR")}원</td>
+            <td style={{ display: "flex", gap: 6 }}>
+              <button onClick={() => setEditing(r)}>수정</button>
+              <button
+                onClick={() => {
+                  db.deleteMoney(r.id);
+                  load();
+                }}
+              >
+                삭제
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+
   return (
     <section className="card">
       <h3 style={{ marginTop: 0 }}>기록 목록 ({month})</h3>
@@ -32,39 +63,31 @@ export function MoneyFlowList({ month, refreshKey = 0 }: { month: string; refres
         if (list.length === 0) return null;
         const subtotal = list.reduce((a, b) => a + b.amount, 0);
 
+        if (type !== "expense") {
+          return (
+            <div key={type} style={{ marginBottom: 14 }}>
+              <h4 style={{ marginBottom: 8 }}>
+                {toKo(type)} 묶음 · 합계 {subtotal.toLocaleString("ko-KR")}원
+              </h4>
+              {renderTable(list)}
+            </div>
+          );
+        }
+
+        const fixed = list.filter((x) => x.expenseKind === "fixed");
+        const variable = list.filter((x) => x.expenseKind === "variable" || !x.expenseKind);
+        const fixedSum = fixed.reduce((a, b) => a + b.amount, 0);
+        const variableSum = variable.reduce((a, b) => a + b.amount, 0);
+
         return (
           <div key={type} style={{ marginBottom: 14 }}>
-            <h4 style={{ marginBottom: 8 }}>
-              {toKo(type)} 묶음 · 합계 {subtotal.toLocaleString("ko-KR")}원
-            </h4>
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>항목</th>
-                  <th>금액</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {list.map((r) => (
-                  <tr key={r.id}>
-                    <td>{toKo(r.label)}</td>
-                    <td>{r.amount.toLocaleString("ko-KR")}원</td>
-                    <td style={{ display: "flex", gap: 6 }}>
-                      <button onClick={() => setEditing(r)}>수정</button>
-                      <button
-                        onClick={() => {
-                          db.deleteMoney(r.id);
-                          load();
-                        }}
-                      >
-                        삭제
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <h4 style={{ marginBottom: 8 }}>지출 묶음 · 합계 {subtotal.toLocaleString("ko-KR")}원</h4>
+
+            <h5 style={{ marginBottom: 6 }}>{toKo("fixed")} · {fixedSum.toLocaleString("ko-KR")}원</h5>
+            {fixed.length > 0 ? renderTable(fixed) : <div className="muted">고정지출 기록 없음</div>}
+
+            <h5 style={{ margin: "12px 0 6px" }}>{toKo("variable")} · {variableSum.toLocaleString("ko-KR")}원</h5>
+            {variable.length > 0 ? renderTable(variable) : <div className="muted">변동지출 기록 없음</div>}
           </div>
         );
       })}
