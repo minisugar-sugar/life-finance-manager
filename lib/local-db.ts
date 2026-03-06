@@ -17,6 +17,7 @@ export type InsuranceRow = {
 export type RetirementProfile = { currentAge: number; targetRetireAge: number; targetMonthlyLivingCost: number };
 
 export type DividendFrequency = "monthly" | "quarterly";
+export type DividendScenario = "conservative" | "base" | "aggressive";
 
 export type AssetProfile = {
   // 현재 자산
@@ -42,6 +43,7 @@ export type AssetProfile = {
   dividendPrincipal: number;
   dividendYieldPct: number;
   dividendFrequency: DividendFrequency;
+  dividendScenario: DividendScenario;
 
   // 월 지출
   livingExpense: number;
@@ -97,6 +99,7 @@ const defaultAssetProfile: AssetProfile = {
   dividendPrincipal: 0,
   dividendYieldPct: 4,
   dividendFrequency: "quarterly",
+  dividendScenario: "base",
   livingExpense: 0,
   loanPayment: 0,
   insurancePayment: 0,

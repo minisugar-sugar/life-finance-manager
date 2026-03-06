@@ -5,6 +5,13 @@ import { RetirementQuickForm } from "@/components/RetirementQuickForm";
 import { AssetProfileForm } from "@/components/AssetProfileForm";
 import { db } from "@/lib/local-db";
 
+type ScenarioResult = {
+  name: string;
+  annualYield: number;
+  projectedDividendBalanceAtRetire: number;
+  projectedMonthlyDividendAtRetire: number;
+};
+
 type RetirementResponse = {
   targetRetireAge: number;
   currentAge: number;
@@ -15,6 +22,7 @@ type RetirementResponse = {
   monthlyGap: number;
   projectedMonthlyDividendAtRetire: number;
   projectedDividendBalanceAtRetire: number;
+  scenarios: ScenarioResult[];
   suggestions: string[];
 };
 
@@ -35,16 +43,47 @@ export default function RetirementPage() {
     const targetAsset = Math.round((profile.targetMonthlyLivingCost * 12) / 0.04); // SWR 4%
     const yearsLeft = Math.max(profile.targetRetireAge - profile.currentAge, 1);
 
-    // 배당 재투자 시뮬레이션
+    // 배당 재투자 시나리오 시뮬레이션
     const periodsPerYear = a.dividendFrequency === "monthly" ? 12 : 4;
-    const periodRate = (a.dividendYieldPct || 0) / 100 / periodsPerYear;
     const totalPeriods = yearsLeft * periodsPerYear;
-    let dividendBalance = a.dividendPrincipal || 0;
-    for (let i = 0; i < totalPeriods; i++) {
-      const div = dividendBalance * periodRate;
-      dividendBalance += div; // 복리 재투자
-    }
-    const projectedMonthlyDividendAtRetire = (dividendBalance * ((a.dividendYieldPct || 0) / 100)) / 12;
+    const baseYield = a.dividendYieldPct || 0;
+    const yields = {
+      conservative: Math.max(baseYield - 1.5, 0),
+      base: baseYield,
+      aggressive: baseYield + 1.5
+    };
+
+    const runScenario = (name: string, annualYield: number) => {
+      const periodRate = annualYield / 100 / periodsPerYear;
+      let balance = a.dividendPrincipal || 0;
+      for (let i = 0; i < totalPeriods; i++) {
+        const div = balance * periodRate;
+        balance += div;
+      }
+      const monthlyDividend = (balance * (annualYield / 100)) / 12;
+      return {
+        name,
+        annualYield,
+        projectedDividendBalanceAtRetire: balance,
+        projectedMonthlyDividendAtRetire: monthlyDividend
+      };
+    };
+
+    const scenarios = [
+      runScenario("보수", yields.conservative),
+      runScenario("중립", yields.base),
+      runScenario("공격", yields.aggressive)
+    ];
+
+    const selectedScenario =
+      a.dividendScenario === "conservative"
+        ? scenarios[0]
+        : a.dividendScenario === "aggressive"
+          ? scenarios[2]
+          : scenarios[1];
+
+    const projectedMonthlyDividendAtRetire = selectedScenario.projectedMonthlyDividendAtRetire;
+    const projectedDividendBalanceAtRetire = selectedScenario.projectedDividendBalanceAtRetire;
 
     const monthlyNeedToInvest = Math.max(Math.round((targetAsset - currentAsset) / (yearsLeft * 12)), 0);
     const effectiveMonthlyNeed = Math.max(monthlyNeedToInvest - projectedMonthlyDividendAtRetire, 0);
@@ -67,7 +106,8 @@ export default function RetirementPage() {
       monthlySurplus,
       monthlyGap,
       projectedMonthlyDividendAtRetire,
-      projectedDividendBalanceAtRetire: dividendBalance,
+      projectedDividendBalanceAtRetire,
+      scenarios,
       suggestions
     });
   };
@@ -103,6 +143,30 @@ export default function RetirementPage() {
             <div className="card">현재 월 잉여자금: {Math.round(data.monthlySurplus).toLocaleString("ko-KR")}원</div>
             <div className="card">월 부족분: {Math.round(data.monthlyGap).toLocaleString("ko-KR")}원</div>
           </div>
+          <div className="card" style={{ marginBottom: 12 }}>
+            <h3 style={{ marginTop: 0 }}>배당 재투자 시나리오 비교</h3>
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>시나리오</th>
+                  <th>연 배당률</th>
+                  <th>은퇴 시점 배당 원금</th>
+                  <th>은퇴 시점 월 배당금</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.scenarios.map((s) => (
+                  <tr key={s.name}>
+                    <td>{s.name}</td>
+                    <td>{s.annualYield.toFixed(1)}%</td>
+                    <td>{Math.round(s.projectedDividendBalanceAtRetire).toLocaleString("ko-KR")}원</td>
+                    <td>{Math.round(s.projectedMonthlyDividendAtRetire).toLocaleString("ko-KR")}원</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
           <div className="card">
             <h3 style={{ marginTop: 0 }}>행동 추천</h3>
             <ul>{data.suggestions.map((s, i) => <li key={i}>{s}</li>)}</ul>

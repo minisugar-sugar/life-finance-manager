@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { db, type AssetProfile, type DividendFrequency } from "@/lib/local-db";
+import { db, type AssetProfile, type DividendFrequency, type DividendScenario } from "@/lib/local-db";
 import { FormattedNumberInput } from "@/components/FormattedNumberInput";
 
 type Field = { key: keyof AssetProfile; label: string };
@@ -39,6 +39,7 @@ export function AssetProfileForm({ onSaved }: { onSaved?: () => void }) {
 
   const setValue = (k: keyof AssetProfile, v: number) => setForm((prev) => ({ ...prev, [k]: v }));
   const setFrequency = (v: DividendFrequency) => setForm((prev) => ({ ...prev, dividendFrequency: v }));
+  const setScenario = (v: DividendScenario) => setForm((prev) => ({ ...prev, dividendScenario: v }));
 
   const save = (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,6 +87,14 @@ export function AssetProfileForm({ onSaved }: { onSaved?: () => void }) {
           <select value={form.dividendFrequency} onChange={(e) => setFrequency(e.target.value as DividendFrequency)}>
             <option value="monthly">월배당</option>
             <option value="quarterly">분기배당</option>
+          </select>
+        </label>
+        <label>
+          배당 시나리오
+          <select value={form.dividendScenario} onChange={(e) => setScenario(e.target.value as DividendScenario)}>
+            <option value="conservative">보수</option>
+            <option value="base">중립</option>
+            <option value="aggressive">공격</option>
           </select>
         </label>
       </div>
