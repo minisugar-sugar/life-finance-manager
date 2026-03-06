@@ -20,7 +20,7 @@ export function MoneyFlowForm({ month, onDone }: { month: string; onDone?: () =>
     alert("입력 완료!");
   };
 
-  const categoryOptions = type === "income" ? ["SALARY", "SIDE", "OTHER"] : type === "expense" ? ["HOUSING", "FOOD", "TRANSPORT", "LEISURE", "INSURANCE", "OTHER"] : type === "invest" ? ["STOCK", "ETF", "BOND", "OTHER"] : ["INSTALLMENT_SAVING", "DEPOSIT", "CMA", "OTHER"];
+  const categoryOptions = type === "income" ? ["SALARY", "SIDE", "OTHER"] : type === "expense" ? ["HOUSING", "FOOD", "TRANSPORT", "LEISURE", "INSURANCE", "LOAN_REPAYMENT", "OTHER"] : type === "invest" ? ["STOCK", "ETF", "BOND", "OTHER"] : ["INSTALLMENT_SAVING", "DEPOSIT", "CMA", "OTHER"];
 
   return (
     <form className="card" onSubmit={submit}>

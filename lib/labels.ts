@@ -16,6 +16,7 @@ export const LABELS: Record<string, string> = {
   TRANSPORT: "교통",
   LEISURE: "여가",
   INSURANCE: "보험료",
+  LOAN_REPAYMENT: "대출 원금/이자 상환",
   COMMUNICATION: "통신",
   UTILITIES: "공과금",
   MEDICAL: "의료",
