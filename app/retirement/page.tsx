@@ -13,6 +13,8 @@ type RetirementResponse = {
   monthlyNeedToInvest: number;
   monthlySurplus: number;
   monthlyGap: number;
+  projectedMonthlyDividendAtRetire: number;
+  projectedDividendBalanceAtRetire: number;
   suggestions: string[];
 };
 
@@ -32,15 +34,28 @@ export default function RetirementPage() {
 
     const targetAsset = Math.round((profile.targetMonthlyLivingCost * 12) / 0.04); // SWR 4%
     const yearsLeft = Math.max(profile.targetRetireAge - profile.currentAge, 1);
+
+    // 배당 재투자 시뮬레이션
+    const periodsPerYear = a.dividendFrequency === "monthly" ? 12 : 4;
+    const periodRate = (a.dividendYieldPct || 0) / 100 / periodsPerYear;
+    const totalPeriods = yearsLeft * periodsPerYear;
+    let dividendBalance = a.dividendPrincipal || 0;
+    for (let i = 0; i < totalPeriods; i++) {
+      const div = dividendBalance * periodRate;
+      dividendBalance += div; // 복리 재투자
+    }
+    const projectedMonthlyDividendAtRetire = (dividendBalance * ((a.dividendYieldPct || 0) / 100)) / 12;
+
     const monthlyNeedToInvest = Math.max(Math.round((targetAsset - currentAsset) / (yearsLeft * 12)), 0);
-    const monthlyGap = Math.max(monthlyNeedToInvest - Math.max(monthlySurplus, 0), 0);
+    const effectiveMonthlyNeed = Math.max(monthlyNeedToInvest - projectedMonthlyDividendAtRetire, 0);
+    const monthlyGap = Math.max(effectiveMonthlyNeed - Math.max(monthlySurplus, 0), 0);
 
     const suggestions = [
       monthlyGap > 0
-        ? `매달 ${monthlyGap.toLocaleString("ko-KR")}원을 더 모아야 목표에 가까워져요.`
+        ? `매달 ${Math.round(monthlyGap).toLocaleString("ko-KR")}원을 더 모아야 목표에 가까워져요.`
         : "지금 페이스면 목표 은퇴자산에 도달할 가능성이 높아요.",
       "지출 중 큰 항목(생활비/대출/보험)을 먼저 줄여보세요.",
-      "배당·임대처럼 자동 수입을 키우면 은퇴 준비가 빨라져요."
+      `배당 재투자를 유지하면 은퇴 시 월 약 ${Math.round(projectedMonthlyDividendAtRetire).toLocaleString("ko-KR")}원 배당을 기대할 수 있어요.`
     ];
 
     setData({
@@ -48,9 +63,11 @@ export default function RetirementPage() {
       targetRetireAge: profile.targetRetireAge,
       targetAsset,
       currentAsset,
-      monthlyNeedToInvest,
+      monthlyNeedToInvest: effectiveMonthlyNeed,
       monthlySurplus,
       monthlyGap,
+      projectedMonthlyDividendAtRetire,
+      projectedDividendBalanceAtRetire: dividendBalance,
       suggestions
     });
   };
@@ -80,7 +97,9 @@ export default function RetirementPage() {
             <div className="card">목표 은퇴 나이: {data.targetRetireAge}세</div>
             <div className="card">목표 은퇴자산: {Math.round(data.targetAsset).toLocaleString("ko-KR")}원</div>
             <div className="card">현재 총자산: {Math.round(data.currentAsset).toLocaleString("ko-KR")}원</div>
-            <div className="card">매달 필요한 투자금: {Math.round(data.monthlyNeedToInvest).toLocaleString("ko-KR")}원</div>
+            <div className="card">매달 필요한 투자금(배당 반영): {Math.round(data.monthlyNeedToInvest).toLocaleString("ko-KR")}원</div>
+            <div className="card">은퇴 시점 배당 원금 예상: {Math.round(data.projectedDividendBalanceAtRetire).toLocaleString("ko-KR")}원</div>
+            <div className="card">은퇴 시점 예상 월 배당금: {Math.round(data.projectedMonthlyDividendAtRetire).toLocaleString("ko-KR")}원</div>
             <div className="card">현재 월 잉여자금: {Math.round(data.monthlySurplus).toLocaleString("ko-KR")}원</div>
             <div className="card">월 부족분: {Math.round(data.monthlyGap).toLocaleString("ko-KR")}원</div>
           </div>

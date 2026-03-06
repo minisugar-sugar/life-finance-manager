@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { db, type AssetProfile } from "@/lib/local-db";
+import { db, type AssetProfile, type DividendFrequency } from "@/lib/local-db";
 import { FormattedNumberInput } from "@/components/FormattedNumberInput";
 
 type Field = { key: keyof AssetProfile; label: string };
@@ -38,6 +38,7 @@ export function AssetProfileForm({ onSaved }: { onSaved?: () => void }) {
   const [form, setForm] = useState<AssetProfile>(db.getAssets());
 
   const setValue = (k: keyof AssetProfile, v: number) => setForm((prev) => ({ ...prev, [k]: v }));
+  const setFrequency = (v: DividendFrequency) => setForm((prev) => ({ ...prev, dividendFrequency: v }));
 
   const save = (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,7 +71,26 @@ export function AssetProfileForm({ onSaved }: { onSaved?: () => void }) {
         ))}
       </div>
 
-      <h4>③ 월 지출</h4>
+      <h4>③ 배당 재투자 가정 (은퇴 계산용)</h4>
+      <div className="grid grid-2" style={{ marginBottom: 10 }}>
+        <label>
+          배당 투자 원금
+          <FormattedNumberInput value={form.dividendPrincipal} onChange={(v) => setValue("dividendPrincipal", v)} />
+        </label>
+        <label>
+          배당률(연 %)
+          <FormattedNumberInput value={form.dividendYieldPct} onChange={(v) => setValue("dividendYieldPct", v)} />
+        </label>
+        <label>
+          배당 주기
+          <select value={form.dividendFrequency} onChange={(e) => setFrequency(e.target.value as DividendFrequency)}>
+            <option value="monthly">월배당</option>
+            <option value="quarterly">분기배당</option>
+          </select>
+        </label>
+      </div>
+
+      <h4>④ 월 지출</h4>
       <div className="grid grid-2">
         {expenseFields.map((f) => (
           <label key={String(f.key)}>
