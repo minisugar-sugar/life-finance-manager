@@ -44,7 +44,7 @@ export default function RetirementPage() {
     const yearsLeft = Math.max(profile.targetRetireAge - profile.currentAge, 1);
 
     // 배당 재투자 시나리오 시뮬레이션
-    const periodsPerYear = a.dividendFrequency === "monthly" ? 12 : 4;
+    const periodsPerYear = a.dividendFrequency === "monthly" ? 12 : a.dividendFrequency === "quarterly" ? 4 : 1;
     const totalPeriods = yearsLeft * periodsPerYear;
     const baseYield = a.dividendYieldPct || 0;
     const yields = {

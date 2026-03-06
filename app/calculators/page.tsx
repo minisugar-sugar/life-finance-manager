@@ -44,10 +44,10 @@ export default function CalculatorsPage() {
   const [dividendPrincipal, setDividendPrincipal] = useState(10000000);
   const [dividendYield, setDividendYield] = useState(5);
   const [dividendYears, setDividendYears] = useState(10);
-  const [dividendFrequency, setDividendFrequency] = useState<"monthly" | "quarterly">("quarterly");
+  const [dividendFrequency, setDividendFrequency] = useState<"monthly" | "quarterly" | "yearly">("quarterly");
 
   const dividend = useMemo(() => {
-    const periodsPerYear = dividendFrequency === "monthly" ? 12 : 4;
+    const periodsPerYear = dividendFrequency === "monthly" ? 12 : dividendFrequency === "quarterly" ? 4 : 1;
     const periodRate = dividendYield / 100 / periodsPerYear;
     const totalPeriods = dividendYears * periodsPerYear;
     let balance = dividendPrincipal;
@@ -150,9 +150,10 @@ export default function CalculatorsPage() {
           </label>
           <label>
             배당 주기
-            <select value={dividendFrequency} onChange={(e) => setDividendFrequency(e.target.value as "monthly" | "quarterly")}>
+            <select value={dividendFrequency} onChange={(e) => setDividendFrequency(e.target.value as "monthly" | "quarterly" | "yearly")}>
               <option value="monthly">월배당</option>
               <option value="quarterly">분기배당</option>
+              <option value="yearly">연배당</option>
             </select>
           </label>
           <label>

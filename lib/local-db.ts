@@ -16,7 +16,7 @@ export type InsuranceRow = {
 };
 export type RetirementProfile = { currentAge: number; targetRetireAge: number; targetMonthlyLivingCost: number };
 
-export type DividendFrequency = "monthly" | "quarterly";
+export type DividendFrequency = "monthly" | "quarterly" | "yearly";
 export type DividendScenario = "conservative" | "base" | "aggressive";
 
 export type AssetProfile = {

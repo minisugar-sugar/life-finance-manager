@@ -87,6 +87,7 @@ export function AssetProfileForm({ onSaved }: { onSaved?: () => void }) {
           <select value={form.dividendFrequency} onChange={(e) => setFrequency(e.target.value as DividendFrequency)}>
             <option value="monthly">월배당</option>
             <option value="quarterly">분기배당</option>
+            <option value="yearly">연배당</option>
           </select>
         </label>
         <label>
