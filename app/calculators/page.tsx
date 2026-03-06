@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import {
   compoundAmount,
   depositMaturity,
-  dividendIncome,
   installmentSavingMaturity,
   loanSchedule,
   retirementTargetAsset,
@@ -39,8 +38,31 @@ export default function CalculatorsPage() {
     a.click();
     URL.revokeObjectURL(url);
   };
-  const dividend = useMemo(() => dividendIncome(200000000, 4.2), []);
   const retire = useMemo(() => retirementTargetAsset(4000000, 4), []);
+
+  const [dividendPrincipal, setDividendPrincipal] = useState(10000000);
+  const [dividendYield, setDividendYield] = useState(5);
+  const [dividendYears, setDividendYears] = useState(10);
+  const [dividendFrequency, setDividendFrequency] = useState<"monthly" | "quarterly">("quarterly");
+
+  const dividend = useMemo(() => {
+    const periodsPerYear = dividendFrequency === "monthly" ? 12 : 4;
+    const periodRate = dividendYield / 100 / periodsPerYear;
+    const totalPeriods = dividendYears * periodsPerYear;
+    let balance = dividendPrincipal;
+    let totalDividend = 0;
+    for (let i = 0; i < totalPeriods; i++) {
+      const d = balance * periodRate;
+      totalDividend += d;
+      balance += d;
+    }
+    return {
+      annualDividendNow: dividendPrincipal * (dividendYield / 100),
+      finalBalance: balance,
+      totalDividend,
+      estimatedAnnualDividendAfterYears: balance * (dividendYield / 100)
+    };
+  }, [dividendPrincipal, dividendYield, dividendYears, dividendFrequency]);
 
   return (
     <main className="container">
@@ -60,7 +82,6 @@ export default function CalculatorsPage() {
         <div className="card">복리 만기금액: {Math.round(compound).toLocaleString("ko-KR")}원</div>
         <div className="card">예금 만기(원금+이자): {Math.round(deposit.maturity).toLocaleString("ko-KR")}원</div>
         <div className="card">적금 만기(월 50만원): {Math.round(saving.maturity).toLocaleString("ko-KR")}원</div>
-        <div className="card">배당 연수익(2억, 4.2%): {Math.round(dividend).toLocaleString("ko-KR")}원</div>
         <div className="card">은퇴 필요자산(월400만원, SWR4%): {Math.round(retire).toLocaleString("ko-KR")}원</div>
       </div>
 
@@ -86,7 +107,7 @@ export default function CalculatorsPage() {
         </div>
       </div>
 
-      <div className="card">
+      <div className="card" style={{ marginBottom: 16 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <h3 style={{ marginTop: 0 }}>상환 스케줄 미리보기 (1~12회차)</h3>
           <button onClick={downloadCsv}>전체 회차 CSV 다운로드</button>
@@ -113,6 +134,38 @@ export default function CalculatorsPage() {
             ))}
           </tbody>
         </table>
+      </div>
+
+      <div className="card" style={{ marginBottom: 16 }}>
+        <h3 style={{ marginTop: 0 }}>배당 계산기 (예적금과 분리)</h3>
+        <div className="grid grid-2">
+          <label>
+            투자금액
+            <input type="number" value={dividendPrincipal} onChange={(e) => setDividendPrincipal(Number(e.target.value))} />
+          </label>
+          <label>
+            배당률(연 %)
+            <input type="number" step="0.1" value={dividendYield} onChange={(e) => setDividendYield(Number(e.target.value))} />
+          </label>
+          <label>
+            배당 주기
+            <select value={dividendFrequency} onChange={(e) => setDividendFrequency(e.target.value as "monthly" | "quarterly")}>
+              <option value="monthly">월배당</option>
+              <option value="quarterly">분기배당</option>
+            </select>
+          </label>
+          <label>
+            재투자 기간(년)
+            <input type="number" value={dividendYears} onChange={(e) => setDividendYears(Number(e.target.value))} />
+          </label>
+        </div>
+
+        <div className="grid grid-2" style={{ marginTop: 12 }}>
+          <div className="card">지금 기준 연간 배당금: {Math.round(dividend.annualDividendNow).toLocaleString("ko-KR")}원</div>
+          <div className="card">{dividendYears}년 재투자 후 자산: {Math.round(dividend.finalBalance).toLocaleString("ko-KR")}원</div>
+          <div className="card">{dividendYears}년 총 배당금 합계: {Math.round(dividend.totalDividend).toLocaleString("ko-KR")}원</div>
+          <div className="card">{dividendYears}년 후 예상 연간 배당금: {Math.round(dividend.estimatedAnnualDividendAfterYears).toLocaleString("ko-KR")}원</div>
+        </div>
       </div>
     </main>
   );

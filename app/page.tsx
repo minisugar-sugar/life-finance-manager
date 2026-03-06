@@ -17,7 +17,6 @@ export default function HomePage() {
 
       <div style={{ marginBottom: 12, display: "flex", gap: 14, flexWrap: "wrap" }}>
         <Link href="/calculators">→ 계산기 페이지</Link>
-        <Link href="/dividend">→ 배당 계산기</Link>
         <Link href="/retirement">→ 은퇴 추천 리포트</Link>
       </div>
 
