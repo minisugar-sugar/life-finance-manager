@@ -15,6 +15,7 @@ export function MoneyFlowForm({ month, onDone }: { month: string; onDone?: () =>
     setAmount(0);
     setMemo("");
     onDone?.();
+    alert("입력 완료!");
   };
 
   const categoryOptions = type === "income" ? ["SALARY", "SIDE", "OTHER"] : type === "expense" ? ["HOUSING", "FOOD", "TRANSPORT", "LEISURE", "OTHER"] : type === "invest" ? ["STOCK", "ETF", "BOND", "OTHER"] : ["INSTALLMENT_SAVING", "DEPOSIT", "CMA", "OTHER"];

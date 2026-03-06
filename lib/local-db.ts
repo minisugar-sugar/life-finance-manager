@@ -36,6 +36,12 @@ function read<T>(name: string, fallback: T): T {
 function write<T>(name: string, value: T) {
   if (typeof window === "undefined") return;
   localStorage.setItem(key(name), JSON.stringify(value));
+  window.dispatchEvent(new Event("lfm:data-changed"));
+}
+
+function makeId() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") return crypto.randomUUID();
+  return `id-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
 export const db = {
@@ -46,7 +52,7 @@ export const db = {
   },
   addMoney: (row: Omit<MoneyRow, "id" | "createdAt">) => {
     const rows = db.listMoney();
-    rows.unshift({ ...row, id: crypto.randomUUID(), createdAt: Date.now() });
+    rows.unshift({ ...row, id: makeId(), createdAt: Date.now() });
     write("money", rows);
   },
   updateMoney: (id: string, patch: Partial<MoneyRow>) => {
@@ -58,7 +64,7 @@ export const db = {
   listInsurance: () => read<InsuranceRow[]>("insurance", []),
   addInsurance: (row: Omit<InsuranceRow, "id">) => {
     const rows = db.listInsurance();
-    rows.unshift({ ...row, id: crypto.randomUUID() });
+    rows.unshift({ ...row, id: makeId() });
     write("insurance", rows);
   },
   updateInsurance: (id: string, patch: Partial<InsuranceRow>) => {

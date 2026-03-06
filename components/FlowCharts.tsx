@@ -8,7 +8,12 @@ const COLORS = ["#4f46e5", "#06b6d4", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6"
 
 export function FlowCharts() {
   const [rows, setRows] = useState<MoneyRow[]>([]);
-  useEffect(() => setRows(db.listMoney(monthKey())), []);
+  useEffect(() => {
+    const load = () => setRows(db.listMoney(monthKey()));
+    load();
+    window.addEventListener("lfm:data-changed", load);
+    return () => window.removeEventListener("lfm:data-changed", load);
+  }, []);
 
   const byType = useMemo(() => {
     const map = new Map<string, number>();

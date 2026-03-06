@@ -10,13 +10,19 @@ export function MonthlyDashboard() {
   const [summary, setSummary] = useState<MonthlySummary>(initial);
 
   useEffect(() => {
-    const rows = db.listMoney(monthKey());
-    const insurance = db.listInsurance().filter((x) => x.status === "ACTIVE").reduce((a, b) => a + Number(b.monthlyPremium), 0);
-    const income = rows.filter((r) => r.type === "income").reduce((a, b) => a + b.amount, 0);
-    const expense = rows.filter((r) => r.type === "expense").reduce((a, b) => a + b.amount, 0);
-    const invest = rows.filter((r) => r.type === "invest").reduce((a, b) => a + b.amount, 0);
-    const save = rows.filter((r) => r.type === "save").reduce((a, b) => a + b.amount, 0);
-    setSummary({ income, expense, invest, save, insurance, net: income - expense });
+    const load = () => {
+      const rows = db.listMoney(monthKey());
+      const insurance = db.listInsurance().filter((x) => x.status === "ACTIVE").reduce((a, b) => a + Number(b.monthlyPremium), 0);
+      const income = rows.filter((r) => r.type === "income").reduce((a, b) => a + b.amount, 0);
+      const expense = rows.filter((r) => r.type === "expense").reduce((a, b) => a + b.amount, 0);
+      const invest = rows.filter((r) => r.type === "invest").reduce((a, b) => a + b.amount, 0);
+      const save = rows.filter((r) => r.type === "save").reduce((a, b) => a + b.amount, 0);
+      setSummary({ income, expense, invest, save, insurance, net: income - expense });
+    };
+
+    load();
+    window.addEventListener("lfm:data-changed", load);
+    return () => window.removeEventListener("lfm:data-changed", load);
   }, []);
 
   const cards = [["월 수입", summary.income], ["월 지출", summary.expense], ["월 투자", summary.invest], ["월 저축", summary.save], ["월 보험료", summary.insurance], ["월 잉여자금", summary.net]] as const;
