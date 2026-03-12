@@ -14,8 +14,6 @@ type ScenarioResult = {
 };
 
 type RetirementResponse = {
-  targetRetireAge: number;
-  currentAge: number;
   targetAsset: number;
   currentAsset: number;
   monthlyNeedToInvest: number;
@@ -28,6 +26,8 @@ type RetirementResponse = {
 
 export default function RetirementPage() {
   const [data, setData] = useState<RetirementResponse | null>(null);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const load = () => {
     const profile = db.getRetire();
@@ -77,8 +77,6 @@ export default function RetirementPage() {
     const monthlyGap = Math.max(effectiveNeed - Math.max(monthlySurplus, 0), 0);
 
     setData({
-      currentAge: profile.currentAge,
-      targetRetireAge: profile.targetRetireAge,
       targetAsset,
       currentAsset,
       monthlyNeedToInvest: effectiveNeed,
@@ -105,49 +103,66 @@ export default function RetirementPage() {
 
   return (
     <main className="container">
-      <h1 className="h1">은퇴 추천 리포트</h1>
-      <p className="muted">복잡한 입력을 보드별로 나눴어요. 순서대로 입력하면 돼요.</p>
+      <h1 className="h1">은퇴 추천 리포트 (초간단 모드)</h1>
+      <p className="muted">3단계로만 입력해요. 필요한 것만 먼저 보고, 자세한 내용은 접어서 볼 수 있어요.</p>
       <button onClick={() => window.print()} style={{ marginBottom: 10 }}>PDF 저장</button>
 
-      <RetirementQuickForm onSaved={load} />
-      <CurrentAssetBoard onSaved={load} />
-      <MonthlyIncomeBoard onSaved={load} />
+      <div className="card" style={{ marginBottom: 12, display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <button onClick={() => setStep(1)} style={{ fontWeight: step === 1 ? 700 : 400 }}>1) 은퇴 목표</button>
+        <button onClick={() => setStep(2)} style={{ fontWeight: step === 2 ? 700 : 400 }}>2) 현재 자산</button>
+        <button onClick={() => setStep(3)} style={{ fontWeight: step === 3 ? 700 : 400 }}>3) 월수익/지출</button>
+      </div>
+
+      {step === 1 && <RetirementQuickForm onSaved={load} />}
+      {step === 2 && <CurrentAssetBoard onSaved={load} />}
+      {step === 3 && <MonthlyIncomeBoard onSaved={load} />}
 
       {!data ? (
         <div className="card">로딩 중...</div>
       ) : (
         <>
-          <div className="grid grid-2" style={{ marginBottom: 16 }}>
+          <div className="grid grid-2" style={{ marginBottom: 12 }}>
             <div className="card">목표 은퇴자산: {data.targetAsset.toLocaleString("ko-KR")}원</div>
             <div className="card">현재 총자산: {data.currentAsset.toLocaleString("ko-KR")}원</div>
-            <div className="card">매달 필요한 투자금(배당 반영): {Math.round(data.monthlyNeedToInvest).toLocaleString("ko-KR")}원</div>
-            <div className="card">은퇴 시점 예상 월 배당금: {Math.round(data.projectedMonthlyDividendAtRetire).toLocaleString("ko-KR")}원</div>
-            <div className="card">현재 월 잉여자금: {Math.round(data.monthlySurplus).toLocaleString("ko-KR")}원</div>
             <div className="card">월 부족분: {Math.round(data.monthlyGap).toLocaleString("ko-KR")}원</div>
           </div>
 
           <div className="card" style={{ marginBottom: 12 }}>
-            <h3 style={{ marginTop: 0 }}>배당 시나리오 비교</h3>
-            <table className="table">
-              <thead>
-                <tr><th>시나리오</th><th>연 배당률</th><th>은퇴 시점 배당 원금</th><th>은퇴 시점 월 배당금</th></tr>
-              </thead>
-              <tbody>
-                {data.scenarios.map((s) => (
-                  <tr key={s.name}>
-                    <td>{s.name}</td>
-                    <td>{s.annualYield.toFixed(1)}%</td>
-                    <td>{Math.round(s.projectedDividendBalanceAtRetire).toLocaleString("ko-KR")}원</td>
-                    <td>{Math.round(s.projectedMonthlyDividendAtRetire).toLocaleString("ko-KR")}원</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <h3 style={{ marginTop: 0 }}>이번 달 액션 3개</h3>
+            <ul>{data.suggestions.slice(0, 3).map((s, i) => <li key={i}>{s}</li>)}</ul>
           </div>
 
           <div className="card">
-            <h3 style={{ marginTop: 0 }}>행동 추천</h3>
-            <ul>{data.suggestions.map((s, i) => <li key={i}>{s}</li>)}</ul>
+            <button onClick={() => setShowAdvanced((v) => !v)}>
+              {showAdvanced ? "고급 정보 닫기" : "고급 정보 열기"}
+            </button>
+
+            {showAdvanced && (
+              <>
+                <div className="grid grid-2" style={{ marginTop: 10 }}>
+                  <div className="card">매달 필요한 투자금(배당 반영): {Math.round(data.monthlyNeedToInvest).toLocaleString("ko-KR")}원</div>
+                  <div className="card">현재 월 잉여자금: {Math.round(data.monthlySurplus).toLocaleString("ko-KR")}원</div>
+                  <div className="card">은퇴 시점 예상 월 배당금: {Math.round(data.projectedMonthlyDividendAtRetire).toLocaleString("ko-KR")}원</div>
+                </div>
+
+                <h3 style={{ marginTop: 12 }}>배당 시나리오 비교</h3>
+                <table className="table">
+                  <thead>
+                    <tr><th>시나리오</th><th>연 배당률</th><th>은퇴 시점 배당 원금</th><th>은퇴 시점 월 배당금</th></tr>
+                  </thead>
+                  <tbody>
+                    {data.scenarios.map((s) => (
+                      <tr key={s.name}>
+                        <td>{s.name}</td>
+                        <td>{s.annualYield.toFixed(1)}%</td>
+                        <td>{Math.round(s.projectedDividendBalanceAtRetire).toLocaleString("ko-KR")}원</td>
+                        <td>{Math.round(s.projectedMonthlyDividendAtRetire).toLocaleString("ko-KR")}원</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </>
+            )}
           </div>
         </>
       )}
