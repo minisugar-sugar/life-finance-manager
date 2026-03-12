@@ -22,6 +22,9 @@ type RetirementResponse = {
   monthlyGap: number;
   projectedMonthlyDividendAtRetire: number;
   projectedNationalPensionMonthly: number;
+  projectedPersonalPensionMonthly: number;
+  projectedBankInterestMonthly: number;
+  projectedRentMonthly: number;
   projectedRetireMonthlyIncome: number;
   scenarios: ScenarioResult[];
   suggestions: string[];
@@ -137,6 +140,9 @@ export default function RetirementPage() {
       monthlyGap,
       projectedMonthlyDividendAtRetire: selectedScenario.projectedMonthlyDividendAtRetire,
       projectedNationalPensionMonthly,
+      projectedPersonalPensionMonthly: personalPensionMonthlyAtRetire,
+      projectedBankInterestMonthly: bankInterestMonthly,
+      projectedRentMonthly: a.rentIncome || 0,
       projectedRetireMonthlyIncome: retireMonthlyIncome,
       scenarios,
       suggestions: [
@@ -185,6 +191,17 @@ export default function RetirementPage() {
           </div>
 
           <div className="card" style={{ marginBottom: 12 }}>
+            <h3 style={{ marginTop: 0 }}>은퇴 후 월수입 구성</h3>
+            <div className="grid grid-2">
+              <div className="card">은행이자: {Math.round(data.projectedBankInterestMonthly).toLocaleString("ko-KR")}원</div>
+              <div className="card">배당수익: {Math.round(data.projectedMonthlyDividendAtRetire).toLocaleString("ko-KR")}원</div>
+              <div className="card">임대수익: {Math.round(data.projectedRentMonthly).toLocaleString("ko-KR")}원</div>
+              <div className="card">국민연금: {Math.round(data.projectedNationalPensionMonthly).toLocaleString("ko-KR")}원</div>
+              <div className="card">개인연금: {Math.round(data.projectedPersonalPensionMonthly).toLocaleString("ko-KR")}원</div>
+            </div>
+          </div>
+
+          <div className="card" style={{ marginBottom: 12 }}>
             <h3 style={{ marginTop: 0 }}>이번 달 액션 3개</h3>
             <ul>{data.suggestions.slice(0, 3).map((s, i) => <li key={i}>{s}</li>)}</ul>
           </div>
@@ -201,6 +218,7 @@ export default function RetirementPage() {
                   <div className="card">현재 월 잉여자금: {Math.round(data.monthlySurplus).toLocaleString("ko-KR")}원</div>
                   <div className="card">은퇴 시점 예상 월 배당금: {Math.round(data.projectedMonthlyDividendAtRetire).toLocaleString("ko-KR")}원</div>
                   <div className="card">국민연금 시작 시 예상 월수령액: {Math.round(data.projectedNationalPensionMonthly).toLocaleString("ko-KR")}원</div>
+                  <div className="card">개인연금 시작 시 예상 월수령액: {Math.round(data.projectedPersonalPensionMonthly).toLocaleString("ko-KR")}원</div>
                 </div>
 
                 <h3 style={{ marginTop: 12 }}>배당 시나리오 비교</h3>
