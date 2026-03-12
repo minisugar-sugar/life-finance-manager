@@ -12,6 +12,7 @@ import {
 } from "@/lib/calculators";
 import { toCsv } from "@/lib/csv";
 import { FormattedNumberInput } from "@/components/FormattedNumberInput";
+import Link from "next/link";
 
 export default function CalculatorsPage() {
   const [principal, setPrincipal] = useState(10000000);
@@ -68,6 +69,7 @@ export default function CalculatorsPage() {
   return (
     <main className="container">
       <h1 className="h1">금융 계산기</h1>
+      <div style={{ marginBottom: 12 }}><Link href="/">← 홈으로</Link></div>
 
       <div className="card" style={{ marginBottom: 16 }}>
         <h3 style={{ marginTop: 0 }}>단리/복리/예적금</h3>

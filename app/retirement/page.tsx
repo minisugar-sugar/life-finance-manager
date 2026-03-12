@@ -5,6 +5,7 @@ import { RetirementQuickForm } from "@/components/RetirementQuickForm";
 import { CurrentAssetBoard } from "@/components/CurrentAssetBoard";
 import { MonthlyIncomeBoard } from "@/components/MonthlyIncomeBoard";
 import { db } from "@/lib/local-db";
+import Link from "next/link";
 
 type ScenarioResult = {
   name: string;
@@ -104,6 +105,7 @@ export default function RetirementPage() {
   return (
     <main className="container">
       <h1 className="h1">은퇴 추천 리포트 (초간단 모드)</h1>
+      <div style={{ marginBottom: 12 }}><Link href="/">← 홈으로</Link></div>
       <p className="muted">3단계로만 입력해요. 필요한 것만 먼저 보고, 자세한 내용은 접어서 볼 수 있어요.</p>
       <button onClick={() => window.print()} style={{ marginBottom: 10 }}>PDF 저장</button>
 
