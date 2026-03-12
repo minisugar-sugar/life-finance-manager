@@ -20,12 +20,6 @@ export default function HomePage() {
             <span className="index-badge">계산 도구</span>
           </Link>
 
-          <Link href="/retirement" className="index-card">
-            <div className="index-title">은퇴 추천 리포트</div>
-            <div className="index-desc">현재 자산과 수입/지출 기반 은퇴 부족분 계산</div>
-            <span className="index-badge">리포트</span>
-          </Link>
-
           <Link href="/money" className="index-card">
             <div className="index-title">돈 기록</div>
             <div className="index-desc">월수입·월지출 등 큰 항목 + 세부 항목 기록/수정/삭제</div>
@@ -36,6 +30,12 @@ export default function HomePage() {
             <div className="index-title">보험 관리</div>
             <div className="index-desc">보험 등록/수정/삭제 및 월 보험료 확인</div>
             <span className="index-badge">보험</span>
+          </Link>
+
+          <Link href="/retirement" className="index-card">
+            <div className="index-title">은퇴 추천 리포트</div>
+            <div className="index-desc">현재 자산과 수입/지출 기반 은퇴 부족분 계산</div>
+            <span className="index-badge">리포트</span>
           </Link>
         </div>
       </div>
