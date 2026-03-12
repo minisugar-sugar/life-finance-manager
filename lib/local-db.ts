@@ -33,11 +33,20 @@ export type AssetProfile = {
   realEstateRent: number;
   otherAsset: number;
 
-  // 월 수입
+  // 현재 월 수입(은퇴 전)
   salaryIncome: number;
   sideIncome: number;
-  dividendIncome: number;
+
+  // 은퇴 후 월수입 항목
   rentIncome: number;
+  pensionMonthly: number;
+  annuityMonthly: number;
+  retireOtherMonthly: number;
+
+  // 이자/배당 기반 수입 계산
+  bankInterestPrincipal: number;
+  bankInterestRatePct: number;
+  dividendIncome: number;
   otherIncome: number;
 
   // 배당 재투자 시뮬레이션 입력
@@ -94,8 +103,13 @@ const defaultAssetProfile: AssetProfile = {
   otherAsset: 0,
   salaryIncome: 0,
   sideIncome: 0,
-  dividendIncome: 0,
   rentIncome: 0,
+  pensionMonthly: 0,
+  annuityMonthly: 0,
+  retireOtherMonthly: 0,
+  bankInterestPrincipal: 0,
+  bankInterestRatePct: 3,
+  dividendIncome: 0,
   otherIncome: 0,
   dividendPrincipal: 0,
   dividendYieldPct: 4,

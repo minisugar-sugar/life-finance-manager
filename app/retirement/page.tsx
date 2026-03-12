@@ -21,6 +21,7 @@ type RetirementResponse = {
   monthlySurplus: number;
   monthlyGap: number;
   projectedMonthlyDividendAtRetire: number;
+  projectedRetireMonthlyIncome: number;
   scenarios: ScenarioResult[];
   suggestions: string[];
 };
@@ -37,9 +38,9 @@ export default function RetirementPage() {
     const currentAsset =
       a.cash + a.depositBalance + a.savingBalance + a.stockEtf + a.bond + a.pension + a.crypto + a.realEstateSelf + a.realEstateRent + a.otherAsset;
 
-    const monthlyIncome = a.salaryIncome + a.sideIncome + a.dividendIncome + a.rentIncome + a.otherIncome;
+    const monthlyIncomeBeforeRetire = a.salaryIncome + a.sideIncome + a.dividendIncome + a.rentIncome + a.otherIncome;
     const monthlyExpense = a.livingExpense + a.loanPayment + a.insurancePayment + a.otherExpense;
-    const monthlySurplus = monthlyIncome - monthlyExpense;
+    const monthlySurplus = monthlyIncomeBeforeRetire - monthlyExpense;
 
     const targetAsset = Math.round((profile.targetMonthlyLivingCost * 12) / 0.04);
     const yearsLeft = Math.max(profile.targetRetireAge - profile.currentAge, 1);
@@ -73,8 +74,17 @@ export default function RetirementPage() {
 
     const selectedScenario = a.dividendScenario === "conservative" ? scenarios[0] : a.dividendScenario === "aggressive" ? scenarios[2] : scenarios[1];
 
+    const bankInterestMonthly = ((a.bankInterestPrincipal || 0) * ((a.bankInterestRatePct || 0) / 100)) / 12;
+    const retireMonthlyIncome =
+      bankInterestMonthly +
+      selectedScenario.projectedMonthlyDividendAtRetire +
+      (a.rentIncome || 0) +
+      (a.pensionMonthly || 0) +
+      (a.annuityMonthly || 0) +
+      (a.retireOtherMonthly || 0);
+
     const monthlyNeedToInvest = Math.max(Math.round((targetAsset - currentAsset) / (yearsLeft * 12)), 0);
-    const effectiveNeed = Math.max(monthlyNeedToInvest - selectedScenario.projectedMonthlyDividendAtRetire, 0);
+    const effectiveNeed = Math.max(monthlyNeedToInvest - retireMonthlyIncome, 0);
     const monthlyGap = Math.max(effectiveNeed - Math.max(monthlySurplus, 0), 0);
 
     setData({
@@ -84,13 +94,14 @@ export default function RetirementPage() {
       monthlySurplus,
       monthlyGap,
       projectedMonthlyDividendAtRetire: selectedScenario.projectedMonthlyDividendAtRetire,
+      projectedRetireMonthlyIncome: retireMonthlyIncome,
       scenarios,
       suggestions: [
         monthlyGap > 0
           ? `매달 ${Math.round(monthlyGap).toLocaleString("ko-KR")}원을 더 모아야 해요.`
           : "현재 흐름이면 목표에 가까워요.",
         "고정지출(대출/보험/통신)부터 먼저 줄여보세요.",
-        `배당 재투자를 유지하면 은퇴 시 월 약 ${Math.round(selectedScenario.projectedMonthlyDividendAtRetire).toLocaleString("ko-KR")}원 배당을 기대할 수 있어요.`
+        `이자+배당+임대+연금을 합치면 은퇴 시 월 약 ${Math.round(retireMonthlyIncome).toLocaleString("ko-KR")}원 수입을 기대할 수 있어요.`
       ]
     });
   };
@@ -126,6 +137,7 @@ export default function RetirementPage() {
           <div className="grid grid-2" style={{ marginBottom: 12 }}>
             <div className="card">목표 은퇴자산: {data.targetAsset.toLocaleString("ko-KR")}원</div>
             <div className="card">현재 총자산: {data.currentAsset.toLocaleString("ko-KR")}원</div>
+            <div className="card">은퇴 후 예상 월수입(전체): {Math.round(data.projectedRetireMonthlyIncome).toLocaleString("ko-KR")}원</div>
             <div className="card">월 부족분: {Math.round(data.monthlyGap).toLocaleString("ko-KR")}원</div>
           </div>
 
