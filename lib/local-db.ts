@@ -61,6 +61,7 @@ export type AssetProfile = {
   personalPensionExpectedReturnPct: number;
   personalPensionMonthly: number;
   personalPensionStartAge: number;
+  personalPensionPayoutYears: number;
 
   // 배당 계좌 적립
   dividendPrincipal: number;
@@ -148,6 +149,7 @@ const defaultAssetProfile: AssetProfile = {
   personalPensionExpectedReturnPct: 4,
   personalPensionMonthly: 0,
   personalPensionStartAge: 55,
+  personalPensionPayoutYears: 20,
   dividendPrincipal: 0,
   dividendMonthlyContribution: 0,
   retireOtherMonthly: 0,
