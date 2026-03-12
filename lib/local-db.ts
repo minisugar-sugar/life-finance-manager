@@ -52,6 +52,9 @@ export type AssetProfile = {
   rentIncome: number;
   nationalPensionMonthly: number;
   nationalPensionStartAge: number;
+  nationalPensionCurrentBalance: number;
+  nationalPensionMonthlyContribution: number;
+  nationalPensionExpectedReturnPct: number;
   personalPensionMonthly: number;
   personalPensionStartAge: number;
   retireOtherMonthly: number;
@@ -129,6 +132,9 @@ const defaultAssetProfile: AssetProfile = {
   rentIncome: 0,
   nationalPensionMonthly: 0,
   nationalPensionStartAge: 65,
+  nationalPensionCurrentBalance: 0,
+  nationalPensionMonthlyContribution: 0,
+  nationalPensionExpectedReturnPct: 4,
   personalPensionMonthly: 0,
   personalPensionStartAge: 55,
   retireOtherMonthly: 0,

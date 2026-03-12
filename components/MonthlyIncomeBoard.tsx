@@ -13,6 +13,9 @@ export function MonthlyIncomeBoard({ onSaved }: { onSaved?: () => void }) {
   const [rent, setRent] = useState(cur.rentIncome);
   const [nationalPensionMonthly, setNationalPensionMonthly] = useState(cur.nationalPensionMonthly ?? 0);
   const [nationalPensionStartAge, setNationalPensionStartAge] = useState(cur.nationalPensionStartAge ?? 65);
+  const [nationalPensionCurrentBalance, setNationalPensionCurrentBalance] = useState(cur.nationalPensionCurrentBalance ?? 0);
+  const [nationalPensionMonthlyContribution, setNationalPensionMonthlyContribution] = useState(cur.nationalPensionMonthlyContribution ?? 0);
+  const [nationalPensionExpectedReturnPct, setNationalPensionExpectedReturnPct] = useState(cur.nationalPensionExpectedReturnPct ?? 4);
   const [personalPensionMonthly, setPersonalPensionMonthly] = useState(cur.personalPensionMonthly ?? 0);
   const [personalPensionStartAge, setPersonalPensionStartAge] = useState(cur.personalPensionStartAge ?? 55);
   const [retireOtherMonthly, setRetireOtherMonthly] = useState(cur.retireOtherMonthly);
@@ -42,6 +45,9 @@ export function MonthlyIncomeBoard({ onSaved }: { onSaved?: () => void }) {
       rentIncome: rent,
       nationalPensionMonthly,
       nationalPensionStartAge,
+      nationalPensionCurrentBalance,
+      nationalPensionMonthlyContribution,
+      nationalPensionExpectedReturnPct,
       personalPensionMonthly,
       personalPensionStartAge,
       retireOtherMonthly,
@@ -77,8 +83,11 @@ export function MonthlyIncomeBoard({ onSaved }: { onSaved?: () => void }) {
         <b>은퇴 후 월수입 항목</b>
         <div className="grid grid-2" style={{ marginTop: 6 }}>
           <label>월 임대수입 <FormattedNumberInput value={rent} onChange={setRent} /></label>
-          <label>국민연금 월수령액 <FormattedNumberInput value={nationalPensionMonthly} onChange={setNationalPensionMonthly} /></label>
           <label>국민연금 시작 나이 <FormattedNumberInput value={nationalPensionStartAge} onChange={setNationalPensionStartAge} /></label>
+          <label>국민연금 현재 적립금 <FormattedNumberInput value={nationalPensionCurrentBalance} onChange={setNationalPensionCurrentBalance} /></label>
+          <label>국민연금 월 납입액 <FormattedNumberInput value={nationalPensionMonthlyContribution} onChange={setNationalPensionMonthlyContribution} /></label>
+          <label>국민연금 기대수익률(연 %) <FormattedNumberInput value={nationalPensionExpectedReturnPct} onChange={setNationalPensionExpectedReturnPct} /></label>
+          <label>국민연금 월수령액(직접입력/보정용) <FormattedNumberInput value={nationalPensionMonthly} onChange={setNationalPensionMonthly} /></label>
           <label>개인연금 월수령액 <FormattedNumberInput value={personalPensionMonthly} onChange={setPersonalPensionMonthly} /></label>
           <label>개인연금 시작 나이 <FormattedNumberInput value={personalPensionStartAge} onChange={setPersonalPensionStartAge} /></label>
           <label>월 기타 은퇴수입 <FormattedNumberInput value={retireOtherMonthly} onChange={setRetireOtherMonthly} /></label>

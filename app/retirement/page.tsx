@@ -21,6 +21,7 @@ type RetirementResponse = {
   monthlySurplus: number;
   monthlyGap: number;
   projectedMonthlyDividendAtRetire: number;
+  projectedNationalPensionMonthly: number;
   projectedRetireMonthlyIncome: number;
   scenarios: ScenarioResult[];
   suggestions: string[];
@@ -75,7 +76,22 @@ export default function RetirementPage() {
     const selectedScenario = a.dividendScenario === "conservative" ? scenarios[0] : a.dividendScenario === "aggressive" ? scenarios[2] : scenarios[1];
 
     const bankInterestMonthly = ((a.bankInterestPrincipal || 0) * ((a.bankInterestRatePct || 0) / 100)) / 12;
-    const nationalPensionMonthlyAtRetire = profile.targetRetireAge >= (a.nationalPensionStartAge || 65) ? (a.nationalPensionMonthly || 0) : 0;
+
+    // 국민연금 예상수령액 계산: 현재 적립금 + 월 납입액을 시작나이까지 복리 운용한 뒤 월수령으로 환산
+    const yearsToNationalPension = Math.max((a.nationalPensionStartAge || 65) - profile.currentAge, 0);
+    const npMonths = yearsToNationalPension * 12;
+    const npMonthlyRate = ((a.nationalPensionExpectedReturnPct || 4) / 100) / 12;
+    let nationalFund = a.nationalPensionCurrentBalance || 0;
+    for (let i = 0; i < npMonths; i++) {
+      nationalFund = nationalFund * (1 + npMonthlyRate) + (a.nationalPensionMonthlyContribution || 0);
+    }
+    const projectedNationalPensionMonthly = (nationalFund * 0.04) / 12; // 4% 인출률 단순환산
+
+    const nationalPensionMonthlyAtRetire =
+      profile.targetRetireAge >= (a.nationalPensionStartAge || 65)
+        ? Math.max(projectedNationalPensionMonthly, a.nationalPensionMonthly || 0)
+        : 0;
+
     const personalPensionMonthlyAtRetire = profile.targetRetireAge >= (a.personalPensionStartAge || 55) ? (a.personalPensionMonthly || 0) : 0;
 
     const retireMonthlyIncome =
@@ -97,6 +113,7 @@ export default function RetirementPage() {
       monthlySurplus,
       monthlyGap,
       projectedMonthlyDividendAtRetire: selectedScenario.projectedMonthlyDividendAtRetire,
+      projectedNationalPensionMonthly,
       projectedRetireMonthlyIncome: retireMonthlyIncome,
       scenarios,
       suggestions: [
@@ -160,6 +177,7 @@ export default function RetirementPage() {
                   <div className="card">매달 필요한 투자금(배당 반영): {Math.round(data.monthlyNeedToInvest).toLocaleString("ko-KR")}원</div>
                   <div className="card">현재 월 잉여자금: {Math.round(data.monthlySurplus).toLocaleString("ko-KR")}원</div>
                   <div className="card">은퇴 시점 예상 월 배당금: {Math.round(data.projectedMonthlyDividendAtRetire).toLocaleString("ko-KR")}원</div>
+                  <div className="card">국민연금 시작 시 예상 월수령액: {Math.round(data.projectedNationalPensionMonthly).toLocaleString("ko-KR")}원</div>
                 </div>
 
                 <h3 style={{ marginTop: 12 }}>배당 시나리오 비교</h3>
