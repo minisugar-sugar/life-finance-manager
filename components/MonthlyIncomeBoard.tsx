@@ -7,28 +7,25 @@ import { FormattedNumberInput } from "@/components/FormattedNumberInput";
 export function MonthlyIncomeBoard({ onSaved }: { onSaved?: () => void }) {
   const cur = db.getAssets();
 
-  // 은퇴 전 참고용
   const [salary, setSalary] = useState(cur.salaryIncome);
   const [side, setSide] = useState(cur.sideIncome);
 
-  // 은퇴 후 월수입 항목
   const [rent, setRent] = useState(cur.rentIncome);
-  const [pensionMonthly, setPensionMonthly] = useState(cur.pensionMonthly);
-  const [annuityMonthly, setAnnuityMonthly] = useState(cur.annuityMonthly);
+  const [nationalPensionMonthly, setNationalPensionMonthly] = useState(cur.nationalPensionMonthly ?? 0);
+  const [nationalPensionStartAge, setNationalPensionStartAge] = useState(cur.nationalPensionStartAge ?? 65);
+  const [personalPensionMonthly, setPersonalPensionMonthly] = useState(cur.personalPensionMonthly ?? 0);
+  const [personalPensionStartAge, setPersonalPensionStartAge] = useState(cur.personalPensionStartAge ?? 55);
   const [retireOtherMonthly, setRetireOtherMonthly] = useState(cur.retireOtherMonthly);
 
-  // 이자 기반
   const [bankPrincipal, setBankPrincipal] = useState(cur.bankInterestPrincipal);
   const [bankRate, setBankRate] = useState(cur.bankInterestRatePct);
 
-  // 배당 기반
   const [dividendIncome, setDividendIncome] = useState(cur.dividendIncome);
   const [dividendPrincipal, setDividendPrincipal] = useState(cur.dividendPrincipal);
   const [dividendYield, setDividendYield] = useState(cur.dividendYieldPct);
   const [dividendFrequency, setDividendFrequency] = useState<DividendFrequency>(cur.dividendFrequency);
   const [dividendScenario, setDividendScenario] = useState<DividendScenario>(cur.dividendScenario);
 
-  // 지출
   const [living, setLiving] = useState(cur.livingExpense);
   const [loan, setLoan] = useState(cur.loanPayment);
   const [insurance, setInsurance] = useState(cur.insurancePayment);
@@ -43,8 +40,10 @@ export function MonthlyIncomeBoard({ onSaved }: { onSaved?: () => void }) {
       salaryIncome: salary,
       sideIncome: side,
       rentIncome: rent,
-      pensionMonthly,
-      annuityMonthly,
+      nationalPensionMonthly,
+      nationalPensionStartAge,
+      personalPensionMonthly,
+      personalPensionStartAge,
       retireOtherMonthly,
       bankInterestPrincipal: bankPrincipal,
       bankInterestRatePct: bankRate,
@@ -78,8 +77,10 @@ export function MonthlyIncomeBoard({ onSaved }: { onSaved?: () => void }) {
         <b>은퇴 후 월수입 항목</b>
         <div className="grid grid-2" style={{ marginTop: 6 }}>
           <label>월 임대수입 <FormattedNumberInput value={rent} onChange={setRent} /></label>
-          <label>월 연금수령액 <FormattedNumberInput value={pensionMonthly} onChange={setPensionMonthly} /></label>
-          <label>월 개인연금/연금보험 <FormattedNumberInput value={annuityMonthly} onChange={setAnnuityMonthly} /></label>
+          <label>국민연금 월수령액 <FormattedNumberInput value={nationalPensionMonthly} onChange={setNationalPensionMonthly} /></label>
+          <label>국민연금 시작 나이 <FormattedNumberInput value={nationalPensionStartAge} onChange={setNationalPensionStartAge} /></label>
+          <label>개인연금 월수령액 <FormattedNumberInput value={personalPensionMonthly} onChange={setPersonalPensionMonthly} /></label>
+          <label>개인연금 시작 나이 <FormattedNumberInput value={personalPensionStartAge} onChange={setPersonalPensionStartAge} /></label>
           <label>월 기타 은퇴수입 <FormattedNumberInput value={retireOtherMonthly} onChange={setRetireOtherMonthly} /></label>
         </div>
       </div>

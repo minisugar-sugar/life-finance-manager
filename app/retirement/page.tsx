@@ -75,12 +75,15 @@ export default function RetirementPage() {
     const selectedScenario = a.dividendScenario === "conservative" ? scenarios[0] : a.dividendScenario === "aggressive" ? scenarios[2] : scenarios[1];
 
     const bankInterestMonthly = ((a.bankInterestPrincipal || 0) * ((a.bankInterestRatePct || 0) / 100)) / 12;
+    const nationalPensionMonthlyAtRetire = profile.targetRetireAge >= (a.nationalPensionStartAge || 65) ? (a.nationalPensionMonthly || 0) : 0;
+    const personalPensionMonthlyAtRetire = profile.targetRetireAge >= (a.personalPensionStartAge || 55) ? (a.personalPensionMonthly || 0) : 0;
+
     const retireMonthlyIncome =
       bankInterestMonthly +
       selectedScenario.projectedMonthlyDividendAtRetire +
       (a.rentIncome || 0) +
-      (a.pensionMonthly || 0) +
-      (a.annuityMonthly || 0) +
+      nationalPensionMonthlyAtRetire +
+      personalPensionMonthlyAtRetire +
       (a.retireOtherMonthly || 0);
 
     const monthlyNeedToInvest = Math.max(Math.round((targetAsset - currentAsset) / (yearsLeft * 12)), 0);

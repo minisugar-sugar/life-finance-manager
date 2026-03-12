@@ -39,8 +39,10 @@ export type AssetProfile = {
 
   // 은퇴 후 월수입 항목
   rentIncome: number;
-  pensionMonthly: number;
-  annuityMonthly: number;
+  nationalPensionMonthly: number;
+  nationalPensionStartAge: number;
+  personalPensionMonthly: number;
+  personalPensionStartAge: number;
   retireOtherMonthly: number;
 
   // 이자/배당 기반 수입 계산
@@ -104,8 +106,10 @@ const defaultAssetProfile: AssetProfile = {
   salaryIncome: 0,
   sideIncome: 0,
   rentIncome: 0,
-  pensionMonthly: 0,
-  annuityMonthly: 0,
+  nationalPensionMonthly: 0,
+  nationalPensionStartAge: 65,
+  personalPensionMonthly: 0,
+  personalPensionStartAge: 55,
   retireOtherMonthly: 0,
   bankInterestPrincipal: 0,
   bankInterestRatePct: 3,
