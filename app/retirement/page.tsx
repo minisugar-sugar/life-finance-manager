@@ -241,8 +241,14 @@ export default function RetirementPage() {
         </div>
         <div className="muted" style={{ marginTop: 6 }}>
           현재 월 배당금: <b>{Math.round(calc.currentMonthlyDividend).toLocaleString("ko-KR")}원</b> ·
-          은퇴 시점 배당 원금: <b>{Math.round(calc.dividendBalanceAtRetire).toLocaleString("ko-KR")}원</b> ·
-          은퇴 시점 월 배당금: <b>{Math.round(calc.retireMonthlyDividend).toLocaleString("ko-KR")}원</b>
+          재투자 후 은퇴 시점 배당 원금: <b>{Math.round(calc.dividendBalanceAtRetire).toLocaleString("ko-KR")}원</b> ·
+          재투자 후 은퇴 시점 예상 월 배당금: <b>{Math.round(calc.retireMonthlyDividend).toLocaleString("ko-KR")}원</b>
+        </div>
+        <div className="card" style={{ marginTop: 8 }}>
+          <b>재투자 후 은퇴 시점 예상 월 배당금</b>
+          <div style={{ fontSize: 22, fontWeight: 700, marginTop: 6 }}>
+            {Math.round(calc.retireMonthlyDividend).toLocaleString("ko-KR")}원
+          </div>
         </div>
       </div>
 
