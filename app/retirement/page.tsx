@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import { db, type DividendFrequency } from "@/lib/local-db";
 import { FormattedNumberInput } from "@/components/FormattedNumberInput";
 import { depositMaturity, installmentSavingMaturity } from "@/lib/calculators";
@@ -194,7 +193,6 @@ export default function RetirementPage() {
   return (
     <main className="container">
       <h1 className="h1">은퇴 추천 리포트</h1>
-      <div style={{ marginBottom: 12 }}><Link href="/">← 홈으로</Link></div>
 
       <div className="card" style={{ marginBottom: 12 }}>
         <h3 style={{ marginTop: 0 }}>목표 설정</h3>

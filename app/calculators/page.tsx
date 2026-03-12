@@ -10,7 +10,6 @@ import {
 } from "@/lib/calculators";
 import { toCsv } from "@/lib/csv";
 import { FormattedNumberInput } from "@/components/FormattedNumberInput";
-import Link from "next/link";
 
 const calcButtons = [
   "7", "8", "9", "/",
@@ -79,7 +78,6 @@ export default function CalculatorsPage() {
   return (
     <main className="container">
       <h1 className="h1">계산기 센터</h1>
-      <div style={{ marginBottom: 12 }}><Link href="/">← 홈으로</Link></div>
 
       {/* 1) 일반 계산기 */}
       <section className="card" style={{ marginBottom: 16 }}>
