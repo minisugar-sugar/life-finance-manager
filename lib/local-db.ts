@@ -55,8 +55,17 @@ export type AssetProfile = {
   nationalPensionCurrentBalance: number;
   nationalPensionMonthlyContribution: number;
   nationalPensionExpectedReturnPct: number;
+
+  personalPensionCurrentBalance: number;
+  personalPensionMonthlyContribution: number;
+  personalPensionExpectedReturnPct: number;
   personalPensionMonthly: number;
   personalPensionStartAge: number;
+
+  // 배당 계좌 적립
+  dividendPrincipal: number;
+  dividendMonthlyContribution: number;
+
   retireOtherMonthly: number;
 
   // 이자/배당 기반 수입 계산
@@ -66,7 +75,6 @@ export type AssetProfile = {
   otherIncome: number;
 
   // 배당 재투자 시뮬레이션 입력
-  dividendPrincipal: number;
   dividendYieldPct: number;
   dividendFrequency: DividendFrequency;
   dividendScenario: DividendScenario;
@@ -135,14 +143,18 @@ const defaultAssetProfile: AssetProfile = {
   nationalPensionCurrentBalance: 0,
   nationalPensionMonthlyContribution: 0,
   nationalPensionExpectedReturnPct: 4,
+  personalPensionCurrentBalance: 0,
+  personalPensionMonthlyContribution: 0,
+  personalPensionExpectedReturnPct: 4,
   personalPensionMonthly: 0,
   personalPensionStartAge: 55,
+  dividendPrincipal: 0,
+  dividendMonthlyContribution: 0,
   retireOtherMonthly: 0,
   bankInterestPrincipal: 0,
   bankInterestRatePct: 3,
   dividendIncome: 0,
   otherIncome: 0,
-  dividendPrincipal: 0,
   dividendYieldPct: 4,
   dividendFrequency: "quarterly",
   dividendScenario: "base",

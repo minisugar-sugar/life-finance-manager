@@ -13,8 +13,6 @@ export function MonthlyIncomeBoard({ onSaved }: { onSaved?: () => void }) {
   const [rent, setRent] = useState(cur.rentIncome);
   const [nationalPensionMonthly, setNationalPensionMonthly] = useState(cur.nationalPensionMonthly ?? 0);
   const [nationalPensionStartAge, setNationalPensionStartAge] = useState(cur.nationalPensionStartAge ?? 65);
-  const [nationalPensionCurrentBalance, setNationalPensionCurrentBalance] = useState(cur.nationalPensionCurrentBalance ?? 0);
-  const [nationalPensionMonthlyContribution, setNationalPensionMonthlyContribution] = useState(cur.nationalPensionMonthlyContribution ?? 0);
   const [nationalPensionExpectedReturnPct, setNationalPensionExpectedReturnPct] = useState(cur.nationalPensionExpectedReturnPct ?? 4);
   const [personalPensionMonthly, setPersonalPensionMonthly] = useState(cur.personalPensionMonthly ?? 0);
   const [personalPensionStartAge, setPersonalPensionStartAge] = useState(cur.personalPensionStartAge ?? 55);
@@ -24,7 +22,6 @@ export function MonthlyIncomeBoard({ onSaved }: { onSaved?: () => void }) {
   const [bankRate, setBankRate] = useState(cur.bankInterestRatePct);
 
   const [dividendIncome, setDividendIncome] = useState(cur.dividendIncome);
-  const [dividendPrincipal, setDividendPrincipal] = useState(cur.dividendPrincipal);
   const [dividendYield, setDividendYield] = useState(cur.dividendYieldPct);
   const [dividendFrequency, setDividendFrequency] = useState<DividendFrequency>(cur.dividendFrequency);
   const [dividendScenario, setDividendScenario] = useState<DividendScenario>(cur.dividendScenario);
@@ -45,8 +42,6 @@ export function MonthlyIncomeBoard({ onSaved }: { onSaved?: () => void }) {
       rentIncome: rent,
       nationalPensionMonthly,
       nationalPensionStartAge,
-      nationalPensionCurrentBalance,
-      nationalPensionMonthlyContribution,
       nationalPensionExpectedReturnPct,
       personalPensionMonthly,
       personalPensionStartAge,
@@ -55,7 +50,6 @@ export function MonthlyIncomeBoard({ onSaved }: { onSaved?: () => void }) {
       bankInterestRatePct: bankRate,
       dividendIncome,
       otherIncome,
-      dividendPrincipal,
       dividendYieldPct: dividendYield,
       dividendFrequency,
       dividendScenario,
@@ -84,8 +78,6 @@ export function MonthlyIncomeBoard({ onSaved }: { onSaved?: () => void }) {
         <div className="grid grid-2" style={{ marginTop: 6 }}>
           <label>월 임대수입 <FormattedNumberInput value={rent} onChange={setRent} /></label>
           <label>국민연금 시작 나이 <FormattedNumberInput value={nationalPensionStartAge} onChange={setNationalPensionStartAge} /></label>
-          <label>국민연금 현재 적립금 <FormattedNumberInput value={nationalPensionCurrentBalance} onChange={setNationalPensionCurrentBalance} /></label>
-          <label>국민연금 월 납입액 <FormattedNumberInput value={nationalPensionMonthlyContribution} onChange={setNationalPensionMonthlyContribution} /></label>
           <label>국민연금 기대수익률(연 %) <FormattedNumberInput value={nationalPensionExpectedReturnPct} onChange={setNationalPensionExpectedReturnPct} /></label>
           <label>국민연금 월수령액(직접입력/보정용) <FormattedNumberInput value={nationalPensionMonthly} onChange={setNationalPensionMonthly} /></label>
           <label>개인연금 월수령액 <FormattedNumberInput value={personalPensionMonthly} onChange={setPersonalPensionMonthly} /></label>
@@ -106,7 +98,7 @@ export function MonthlyIncomeBoard({ onSaved }: { onSaved?: () => void }) {
         <b>배당 수익 설정</b>
         <div className="grid grid-2" style={{ marginTop: 6 }}>
           <label>월 배당수입(현재) <FormattedNumberInput value={dividendIncome} onChange={setDividendIncome} /></label>
-          <label>배당 투자 원금 <FormattedNumberInput value={dividendPrincipal} onChange={setDividendPrincipal} /></label>
+          <label>배당 투자 원금(현재자산 보드 연동): <b>{(cur.dividendPrincipal || 0).toLocaleString("ko-KR")}원</b></label>
           <label>배당률(연 %) <FormattedNumberInput value={dividendYield} onChange={setDividendYield} /></label>
           <label>
             배당 주기

@@ -58,7 +58,11 @@ export default function RetirementPage() {
     const runScenario = (name: string, annualYield: number) => {
       const periodRate = annualYield / 100 / periodsPerYear;
       let balance = a.dividendPrincipal || 0;
-      for (let i = 0; i < totalPeriods; i++) balance += balance * periodRate;
+      const monthlyContribution = a.dividendMonthlyContribution || 0;
+      for (let i = 0; i < totalPeriods; i++) {
+        balance += balance * periodRate;
+        balance += monthlyContribution * (12 / periodsPerYear);
+      }
       return {
         name,
         annualYield,
@@ -92,7 +96,19 @@ export default function RetirementPage() {
         ? Math.max(projectedNationalPensionMonthly, a.nationalPensionMonthly || 0)
         : 0;
 
-    const personalPensionMonthlyAtRetire = profile.targetRetireAge >= (a.personalPensionStartAge || 55) ? (a.personalPensionMonthly || 0) : 0;
+    const yearsToPersonalPension = Math.max((a.personalPensionStartAge || 55) - profile.currentAge, 0);
+    const ppMonths = yearsToPersonalPension * 12;
+    const ppMonthlyRate = ((a.personalPensionExpectedReturnPct || 4) / 100) / 12;
+    let personalFund = a.personalPensionCurrentBalance || 0;
+    for (let i = 0; i < ppMonths; i++) {
+      personalFund = personalFund * (1 + ppMonthlyRate) + (a.personalPensionMonthlyContribution || 0);
+    }
+    const projectedPersonalPensionMonthly = (personalFund * 0.04) / 12;
+
+    const personalPensionMonthlyAtRetire =
+      profile.targetRetireAge >= (a.personalPensionStartAge || 55)
+        ? Math.max(projectedPersonalPensionMonthly, a.personalPensionMonthly || 0)
+        : 0;
 
     const retireMonthlyIncome =
       bankInterestMonthly +

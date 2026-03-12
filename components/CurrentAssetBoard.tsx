@@ -22,6 +22,14 @@ export function CurrentAssetBoard({ onSaved }: { onSaved?: () => void }) {
   const [stock, setStock] = useState(cur.stockEtf);
   const [bond, setBond] = useState(cur.bond);
   const [pension, setPension] = useState(cur.pension);
+
+  const [dividendPrincipal, setDividendPrincipal] = useState(cur.dividendPrincipal ?? 0);
+  const [dividendMonthlyContribution, setDividendMonthlyContribution] = useState(cur.dividendMonthlyContribution ?? 0);
+
+  const [nationalPensionCurrentBalance, setNationalPensionCurrentBalance] = useState(cur.nationalPensionCurrentBalance ?? 0);
+  const [nationalPensionMonthlyContribution, setNationalPensionMonthlyContribution] = useState(cur.nationalPensionMonthlyContribution ?? 0);
+  const [personalPensionCurrentBalance, setPersonalPensionCurrentBalance] = useState(cur.personalPensionCurrentBalance ?? 0);
+  const [personalPensionMonthlyContribution, setPersonalPensionMonthlyContribution] = useState(cur.personalPensionMonthlyContribution ?? 0);
   const [realEstateSelf, setRealEstateSelf] = useState(cur.realEstateSelf);
   const [realEstateRent, setRealEstateRent] = useState(cur.realEstateRent);
   const [crypto, setCrypto] = useState(cur.crypto);
@@ -60,6 +68,13 @@ export function CurrentAssetBoard({ onSaved }: { onSaved?: () => void }) {
       stockEtf: stock,
       bond,
       pension,
+
+      dividendPrincipal,
+      dividendMonthlyContribution,
+      nationalPensionCurrentBalance,
+      nationalPensionMonthlyContribution,
+      personalPensionCurrentBalance,
+      personalPensionMonthlyContribution,
       realEstateSelf,
       realEstateRent,
       crypto,
@@ -95,6 +110,18 @@ export function CurrentAssetBoard({ onSaved }: { onSaved?: () => void }) {
         </div>
         <div className="muted" style={{ marginTop: 6 }}>
           적금 만기 예상금액: <b>{Math.round(savingCalc.maturity).toLocaleString("ko-KR")}원</b>
+        </div>
+      </div>
+
+      <div className="soft-panel" style={{ marginBottom: 8 }}>
+        <b>연금/배당 적립 자산</b>
+        <div className="grid grid-2" style={{ marginTop: 6 }}>
+          <label>현재 배당 투자금 <FormattedNumberInput value={dividendPrincipal} onChange={setDividendPrincipal} /></label>
+          <label>배당 월 추가적립액 <FormattedNumberInput value={dividendMonthlyContribution} onChange={setDividendMonthlyContribution} /></label>
+          <label>국민연금 현재 적립금 <FormattedNumberInput value={nationalPensionCurrentBalance} onChange={setNationalPensionCurrentBalance} /></label>
+          <label>국민연금 월 납입액 <FormattedNumberInput value={nationalPensionMonthlyContribution} onChange={setNationalPensionMonthlyContribution} /></label>
+          <label>개인연금 현재 적립금 <FormattedNumberInput value={personalPensionCurrentBalance} onChange={setPersonalPensionCurrentBalance} /></label>
+          <label>개인연금 월 납입액 <FormattedNumberInput value={personalPensionMonthlyContribution} onChange={setPersonalPensionMonthlyContribution} /></label>
         </div>
       </div>
 
