@@ -19,13 +19,14 @@ export default function CalculatorsPage() {
   const [rate, setRate] = useState(3.5);
   const [months, setMonths] = useState(12);
   const [loanPrincipal, setLoanPrincipal] = useState(300000000);
+  const [monthlySavingAmount, setMonthlySavingAmount] = useState(500000);
   const [loanMonths, setLoanMonths] = useState(360);
   const [loanMethod, setLoanMethod] = useState<LoanMethod>("ANNUITY");
 
   const simple = useMemo(() => simpleInterest(principal, rate, months / 12), [principal, rate, months]);
   const compound = useMemo(() => compoundAmount(principal, rate, months / 12), [principal, rate, months]);
   const deposit = useMemo(() => depositMaturity(principal, rate, months), [principal, rate, months]);
-  const saving = useMemo(() => installmentSavingMaturity(500000, rate, months), [rate, months]);
+  const saving = useMemo(() => installmentSavingMaturity(monthlySavingAmount, rate, months), [monthlySavingAmount, rate, months]);
   const schedule = useMemo(() => loanSchedule(loanPrincipal, rate, loanMonths, loanMethod), [loanPrincipal, rate, loanMonths, loanMethod]);
   const schedulePreview = schedule.slice(0, 12);
   const totalInterest = schedule.reduce((acc, row) => acc + row.interestPaid, 0);
@@ -101,20 +102,30 @@ export default function CalculatorsPage() {
       </div>
 
       <div className="card" style={{ marginBottom: 16 }}>
-        <h3 style={{ marginTop: 0 }}>단리/복리/예적금</h3>
+        <h3 style={{ marginTop: 0 }}>예금 계산기</h3>
         <div className="grid grid-2">
-          <label>원금 <FormattedNumberInput value={principal} onChange={setPrincipal} /></label>
-          <label>연이율(%) <input type="number" value={rate} onChange={(e) => setRate(Number(e.target.value))} /></label>
-          <label>기간(개월) <input type="number" value={months} onChange={(e) => setMonths(Number(e.target.value))} /></label>
+          <label>예금 원금 <FormattedNumberInput value={principal} onChange={setPrincipal} /></label>
+          <label>예금 연이율(%) <input type="number" value={rate} onChange={(e) => setRate(Number(e.target.value))} /></label>
+          <label>예금 기간(개월) <input type="number" value={months} onChange={(e) => setMonths(Number(e.target.value))} /></label>
+        </div>
+        <div className="grid grid-2" style={{ marginTop: 12 }}>
+          <div className="card">단리 이자: {simple.toLocaleString("ko-KR")}원</div>
+          <div className="card">복리 만기금액: {Math.round(compound).toLocaleString("ko-KR")}원</div>
+          <div className="card">예금 만기(원금+이자): {Math.round(deposit.maturity).toLocaleString("ko-KR")}원</div>
         </div>
       </div>
 
-      <div className="grid grid-2" style={{ marginBottom: 16 }}>
-        <div className="card">단리 이자: {simple.toLocaleString("ko-KR")}원</div>
-        <div className="card">복리 만기금액: {Math.round(compound).toLocaleString("ko-KR")}원</div>
-        <div className="card">예금 만기(원금+이자): {Math.round(deposit.maturity).toLocaleString("ko-KR")}원</div>
-        <div className="card">적금 만기(월 50만원): {Math.round(saving.maturity).toLocaleString("ko-KR")}원</div>
-        <div className="card">은퇴 필요자산(월400만원, SWR4%): {Math.round(retire).toLocaleString("ko-KR")}원</div>
+      <div className="card" style={{ marginBottom: 16 }}>
+        <h3 style={{ marginTop: 0 }}>적금 계산기</h3>
+        <div className="grid grid-2">
+          <label>월 적금 납입액 <FormattedNumberInput value={monthlySavingAmount} onChange={setMonthlySavingAmount} /></label>
+          <label>적금 연이율(%) <input type="number" value={rate} onChange={(e) => setRate(Number(e.target.value))} /></label>
+          <label>적금 기간(개월) <input type="number" value={months} onChange={(e) => setMonths(Number(e.target.value))} /></label>
+        </div>
+        <div className="grid grid-2" style={{ marginTop: 12 }}>
+          <div className="card">적금 만기(월 50만원): {Math.round(saving.maturity).toLocaleString("ko-KR")}원</div>
+          <div className="card">은퇴 필요자산(월400만원, SWR4%): {Math.round(retire).toLocaleString("ko-KR")}원</div>
+        </div>
       </div>
 
       <div className="card" style={{ marginBottom: 16 }}>
