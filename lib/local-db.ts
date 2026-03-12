@@ -25,6 +25,17 @@ export type AssetProfile = {
   cash: number;
   depositBalance: number;
   savingBalance: number;
+
+  // 예금/적금 상세 입력(자동 만기 계산용)
+  depositPrincipal: number;
+  depositStartDate: string;
+  depositRatePct: number;
+  depositTermMonths: number;
+
+  savingMonthlyAmount: number;
+  savingStartDate: string;
+  savingRatePct: number;
+  savingTermMonths: number;
   stockEtf: number;
   bond: number;
   pension: number;
@@ -96,6 +107,16 @@ const defaultAssetProfile: AssetProfile = {
   cash: 0,
   depositBalance: 0,
   savingBalance: 0,
+
+  depositPrincipal: 0,
+  depositStartDate: "",
+  depositRatePct: 3,
+  depositTermMonths: 12,
+
+  savingMonthlyAmount: 0,
+  savingStartDate: "",
+  savingRatePct: 3,
+  savingTermMonths: 12,
   stockEtf: 0,
   bond: 0,
   pension: 0,
