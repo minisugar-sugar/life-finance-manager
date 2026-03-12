@@ -47,6 +47,18 @@ export default function CalculatorsPage() {
   const [dividendYears, setDividendYears] = useState(10);
   const [dividendFrequency, setDividendFrequency] = useState<"monthly" | "quarterly" | "yearly">("quarterly");
 
+  const [aNum, setANum] = useState(0);
+  const [bNum, setBNum] = useState(0);
+  const [op, setOp] = useState<"+" | "-" | "*" | "/">("+");
+
+  const simpleCalcResult = useMemo(() => {
+    if (op === "+") return aNum + bNum;
+    if (op === "-") return aNum - bNum;
+    if (op === "*") return aNum * bNum;
+    if (bNum === 0) return 0;
+    return aNum / bNum;
+  }, [aNum, bNum, op]);
+
   const dividend = useMemo(() => {
     const periodsPerYear = dividendFrequency === "monthly" ? 12 : dividendFrequency === "quarterly" ? 4 : 1;
     const periodRate = dividendYield / 100 / periodsPerYear;
@@ -70,6 +82,23 @@ export default function CalculatorsPage() {
     <main className="container">
       <h1 className="h1">금융 계산기</h1>
       <div style={{ marginBottom: 12 }}><Link href="/">← 홈으로</Link></div>
+
+      <div className="card" style={{ marginBottom: 16 }}>
+        <h3 style={{ marginTop: 0 }}>일반 계산기</h3>
+        <div className="grid grid-2">
+          <label>숫자 A <FormattedNumberInput value={aNum} onChange={setANum} /></label>
+          <label>연산자
+            <select value={op} onChange={(e) => setOp(e.target.value as "+" | "-" | "*" | "/")}>
+              <option value="+">+</option>
+              <option value="-">-</option>
+              <option value="*">×</option>
+              <option value="/">÷</option>
+            </select>
+          </label>
+          <label>숫자 B <FormattedNumberInput value={bNum} onChange={setBNum} /></label>
+          <div className="card">결과: {Number.isFinite(simpleCalcResult) ? simpleCalcResult.toLocaleString("ko-KR") : "-"}</div>
+        </div>
+      </div>
 
       <div className="card" style={{ marginBottom: 16 }}>
         <h3 style={{ marginTop: 0 }}>단리/복리/예적금</h3>
