@@ -15,17 +15,23 @@ type ScenarioResult = {
 };
 
 type RetirementResponse = {
+  targetMonthlyLivingCost: number;
   targetAsset: number;
   currentAsset: number;
+  achievementRate: number;
   monthlyNeedToInvest: number;
   monthlySurplus: number;
   monthlyGap: number;
+  additionalMonthlyPrep: number;
+  currentMonthlyDividend: number;
+  projectedDividendBalanceAtRetire: number;
   projectedMonthlyDividendAtRetire: number;
   projectedNationalPensionMonthly: number;
   projectedPersonalPensionMonthly: number;
   projectedBankInterestMonthly: number;
   projectedRentMonthly: number;
   projectedRetireMonthlyIncome: number;
+  pensionGapYears: number;
   scenarios: ScenarioResult[];
   suggestions: string[];
 };
@@ -82,6 +88,7 @@ export default function RetirementPage() {
 
     const selectedScenario = a.dividendScenario === "conservative" ? scenarios[0] : a.dividendScenario === "aggressive" ? scenarios[2] : scenarios[1];
 
+    const currentMonthlyDividend = ((a.dividendPrincipal || 0) * ((a.dividendYieldPct || 0) / 100)) / 12;
     const bankInterestMonthly = ((a.bankInterestPrincipal || 0) * ((a.bankInterestRatePct || 0) / 100)) / 12;
 
     // 국민연금 예상수령액 계산: 현재 적립금 + 월 납입액을 시작나이까지 복리 운용한 뒤 월수령으로 환산
@@ -101,8 +108,9 @@ export default function RetirementPage() {
     }
     const projectedNationalPensionMonthly = (nationalFund * 0.04) / 12; // 4% 인출률 단순환산
 
+    const nationalPensionStartAge = a.nationalPensionStartAge || 65;
     const nationalPensionMonthlyAtRetire =
-      profile.targetRetireAge >= (a.nationalPensionStartAge || 65)
+      profile.targetRetireAge >= nationalPensionStartAge
         ? Math.max(projectedNationalPensionMonthly, a.nationalPensionMonthly || 0)
         : 0;
 
@@ -132,25 +140,36 @@ export default function RetirementPage() {
     const effectiveNeed = Math.max(monthlyNeedToInvest - retireMonthlyIncome, 0);
     const monthlyGap = Math.max(effectiveNeed - Math.max(monthlySurplus, 0), 0);
 
+    const achievementRate = targetAsset > 0 ? Math.min((currentAsset / targetAsset) * 100, 999) : 0;
+    const pensionGapYears = Math.max(nationalPensionStartAge - profile.targetRetireAge, 0);
+
     setData({
+      targetMonthlyLivingCost: profile.targetMonthlyLivingCost,
       targetAsset,
       currentAsset,
+      achievementRate,
       monthlyNeedToInvest: effectiveNeed,
       monthlySurplus,
       monthlyGap,
+      additionalMonthlyPrep: Math.max(monthlyGap, 0),
+      currentMonthlyDividend,
+      projectedDividendBalanceAtRetire: selectedScenario.projectedDividendBalanceAtRetire,
       projectedMonthlyDividendAtRetire: selectedScenario.projectedMonthlyDividendAtRetire,
       projectedNationalPensionMonthly,
       projectedPersonalPensionMonthly: personalPensionMonthlyAtRetire,
       projectedBankInterestMonthly: bankInterestMonthly,
       projectedRentMonthly: a.rentIncome || 0,
       projectedRetireMonthlyIncome: retireMonthlyIncome,
+      pensionGapYears,
       scenarios,
       suggestions: [
         monthlyGap > 0
-          ? `매달 ${Math.round(monthlyGap).toLocaleString("ko-KR")}원을 더 모아야 해요.`
-          : "현재 흐름이면 목표에 가까워요.",
-        "고정지출(대출/보험/통신)부터 먼저 줄여보세요.",
-        `이자+배당+임대+연금을 합치면 은퇴 시 월 약 ${Math.round(retireMonthlyIncome).toLocaleString("ko-KR")}원 수입을 기대할 수 있어요.`
+          ? `월 부족분 ${Math.round(monthlyGap).toLocaleString("ko-KR")}원 → 배당 적립 증액 + 지출 절감 + 은퇴시점 조정으로 해소하세요.`
+          : "월수입이 목표 생활비를 충족하고 있어요. 유지 전략으로 관리하세요.",
+        pensionGapYears > 0
+          ? `국민연금 개시 전 공백 ${pensionGapYears}년이 있어요. 생활비 브릿지 자금을 따로 준비하세요.`
+          : "국민연금 개시 타이밍이 은퇴 시점과 맞거나 더 이릅니다.",
+        "개인연금은 수령기간을 길게 잡으면 월수령은 줄어도 안정성은 올라갑니다."
       ]
     });
   };
@@ -170,9 +189,9 @@ export default function RetirementPage() {
       <button onClick={() => window.print()} style={{ marginBottom: 10 }}>PDF 저장</button>
 
       <div className="card" style={{ marginBottom: 12, display: "flex", gap: 8, flexWrap: "wrap" }}>
-        <button onClick={() => setStep(1)} style={{ fontWeight: step === 1 ? 700 : 400 }}>1) 은퇴 목표</button>
-        <button onClick={() => setStep(2)} style={{ fontWeight: step === 2 ? 700 : 400 }}>2) 현재 자산</button>
-        <button onClick={() => setStep(3)} style={{ fontWeight: step === 3 ? 700 : 400 }}>3) 월수익/지출</button>
+        <button onClick={() => setStep(1)} style={{ fontWeight: step === 1 ? 700 : 400 }}>A) 은퇴 목표</button>
+        <button onClick={() => setStep(2)} style={{ fontWeight: step === 2 ? 700 : 400 }}>B) 현재 자산</button>
+        <button onClick={() => setStep(3)} style={{ fontWeight: step === 3 ? 700 : 400 }}>C/D) 배당·연금·월수입</button>
       </div>
 
       {step === 1 && <RetirementQuickForm onSaved={load} />}
@@ -184,17 +203,20 @@ export default function RetirementPage() {
       ) : (
         <>
           <div className="grid grid-2" style={{ marginBottom: 12 }}>
-            <div className="card">목표 은퇴자산: {data.targetAsset.toLocaleString("ko-KR")}원</div>
-            <div className="card">현재 총자산: {data.currentAsset.toLocaleString("ko-KR")}원</div>
+            <div className="card">목표 은퇴 월생활비: {data.targetMonthlyLivingCost.toLocaleString("ko-KR")}원</div>
             <div className="card">은퇴 후 예상 월수입(전체): {Math.round(data.projectedRetireMonthlyIncome).toLocaleString("ko-KR")}원</div>
-            <div className="card">월 부족분: {Math.round(data.monthlyGap).toLocaleString("ko-KR")}원</div>
+            <div className="card">월 부족분/여유분: {Math.round(data.monthlyGap).toLocaleString("ko-KR")}원</div>
+            <div className="card">목표 은퇴자산 대비 달성률: {data.achievementRate.toFixed(1)}%</div>
+            <div className="card">지금부터 월 추가 준비 필요액: {Math.round(data.additionalMonthlyPrep).toLocaleString("ko-KR")}원</div>
           </div>
 
           <div className="card" style={{ marginBottom: 12 }}>
             <h3 style={{ marginTop: 0 }}>은퇴 후 월수입 구성</h3>
             <div className="grid grid-2">
               <div className="card">은행이자: {Math.round(data.projectedBankInterestMonthly).toLocaleString("ko-KR")}원</div>
-              <div className="card">배당수익: {Math.round(data.projectedMonthlyDividendAtRetire).toLocaleString("ko-KR")}원</div>
+              <div className="card">배당(현재): {Math.round(data.currentMonthlyDividend).toLocaleString("ko-KR")}원</div>
+              <div className="card">배당(은퇴시): {Math.round(data.projectedMonthlyDividendAtRetire).toLocaleString("ko-KR")}원</div>
+              <div className="card">배당 은퇴시점 원금: {Math.round(data.projectedDividendBalanceAtRetire).toLocaleString("ko-KR")}원</div>
               <div className="card">임대수익: {Math.round(data.projectedRentMonthly).toLocaleString("ko-KR")}원</div>
               <div className="card">국민연금: {Math.round(data.projectedNationalPensionMonthly).toLocaleString("ko-KR")}원</div>
               <div className="card">개인연금: {Math.round(data.projectedPersonalPensionMonthly).toLocaleString("ko-KR")}원</div>
