@@ -82,12 +82,19 @@ export default function RetirementPage() {
     const bankInterestMonthly = ((a.bankInterestPrincipal || 0) * ((a.bankInterestRatePct || 0) / 100)) / 12;
 
     // 국민연금 예상수령액 계산: 현재 적립금 + 월 납입액을 시작나이까지 복리 운용한 뒤 월수령으로 환산
+    // 국민연금 납부는 60세까지만 반영
+    const contributionEndAge = 60;
+    const startContributionAge = profile.currentAge;
+    const endContributionAge = Math.min(contributionEndAge, a.nationalPensionStartAge || 65);
     const yearsToNationalPension = Math.max((a.nationalPensionStartAge || 65) - profile.currentAge, 0);
     const npMonths = yearsToNationalPension * 12;
+    const contributionMonths = Math.max((endContributionAge - startContributionAge) * 12, 0);
+
     const npMonthlyRate = ((a.nationalPensionExpectedReturnPct || 4) / 100) / 12;
     let nationalFund = a.nationalPensionCurrentBalance || 0;
     for (let i = 0; i < npMonths; i++) {
-      nationalFund = nationalFund * (1 + npMonthlyRate) + (a.nationalPensionMonthlyContribution || 0);
+      const add = i < contributionMonths ? (a.nationalPensionMonthlyContribution || 0) : 0;
+      nationalFund = nationalFund * (1 + npMonthlyRate) + add;
     }
     const projectedNationalPensionMonthly = (nationalFund * 0.04) / 12; // 4% 인출률 단순환산
 
